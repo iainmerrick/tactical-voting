@@ -1,0 +1,14 @@
+rule bundle
+    command = browserify --debug $in > $out
+
+rule ugly
+    command = uglifyjs $in -o $out --in-source-map inline --source-map $out.map --source-map-includeSources
+
+rule copy
+    command = cp $in $out
+    
+build out/bundle.js : bundle main.js hello.js
+
+build docs/index.js | docs/index.js.map: ugly out/bundle.js
+
+build docs/index.html : copy index.html

@@ -1,2 +1,3 @@
-.tup
-index.js
+out
+.ninja_deps
+.ninja_log

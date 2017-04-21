@@ -1,7 +1,0 @@
-: src/*.js \
-    |> browserify --debug src/main.js > %o \
-    |> bundle.js
-
-: bundle.js \
-    |> uglifyjs %f -o %o --in-source-map inline --source-map index.js.map --source-map-includeSources \
-    |> index.js | index.js.map
