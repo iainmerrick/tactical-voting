@@ -1,0 +1,3 @@
+: src/*.js |> browserify src/main.js | uglifyjs -b -i 2 > %o |> index.js
+
+.gitignore
