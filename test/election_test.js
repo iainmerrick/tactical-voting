@@ -2,6 +2,8 @@
 
 "use strict";
 
+require("babel-register");
+
 const assert = require("assert");
 
 const election = require("../src/election");

@@ -1,6 +1,6 @@
 "use strict";
 
-function get_seats(data) {
+export function get_seats(data) {
     var keys = data[0];
     var seats = []
     var i, j;
@@ -26,7 +26,7 @@ function get_seats(data) {
     return seat_map;
 }
 
-function get_votes(data) {
+export function get_votes(data) {
     var keys = data[0];
     var votes = []
     var i, j;
@@ -45,6 +45,3 @@ function get_votes(data) {
     }
     return vote_map;
 }
-
-exports.get_seats = get_seats;
-exports.get_votes = get_votes;
