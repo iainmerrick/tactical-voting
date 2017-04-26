@@ -9,15 +9,19 @@ export function get_seats(data) {
     }
     for (i = 1; i < data.length; i++) {
         var row = data[i];
-        var max_index = 0;
+        var max_indices = [];
         var max_value = 0;
         for (j = 1; j < row.length; j++) {
             if (row[j] > max_value) {
-                max_index = j;
+                max_indices = [j];
                 max_value = row[j];
+            } else if (row[j] == max_value) {
+                max_indices.push(j);
             }
         }
-        seats[max_index] += 1;
+        for (let winner of max_indices) {
+            seats[winner] += 1.0 / max_indices.length;
+        }
     }
     var seat_map = {};
     for (i = 1; i < keys.length; i++) {
