@@ -7,6 +7,9 @@ BABEL = ${NODE_BIN}/babel
 rule install
     command = npm install
 
+rule babel
+    command = $BABEL $in > $out
+
 rule bundle
     command = $BROWSERIFY --debug $in > $out
 
@@ -17,8 +20,11 @@ rule copy
     command = cp $in $out
 
 build $BROWSERIFY $UGLIFYJS $BABEL : install package.json
+
+build out/main.js : babel main.js
+build out/hello.js : babel hello.js
     
-build out/bundle.js : bundle main.js hello.js | $BROWSERIFY
+build out/bundle.js : bundle out/main.js out/hello.js | $BROWSERIFY
 
 build docs/index.js | docs/index.js.map: ugly out/bundle.js | $UGLIFYJS
 

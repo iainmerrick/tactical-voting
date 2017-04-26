@@ -1,7 +1,5 @@
 "use strict";
 
-function Hello(person) {
+export function Hello(person) {
     return "Hello, " + person;
 }
-
-exports.Hello = Hello;
