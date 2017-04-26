@@ -1,14 +1,25 @@
+NODE_BIN = node_modules/.bin
+
+BROWSERIFY = ${NODE_BIN}/browserify
+UGLIFYJS = ${NODE_BIN}/uglifyjs
+BABEL = ${NODE_BIN}/babel
+
+rule install
+    command = npm install
+
 rule bundle
-    command = browserify --debug $in > $out
+    command = $BROWSERIFY --debug $in > $out
 
 rule ugly
-    command = uglifyjs $in -o $out --in-source-map inline --source-map $out.map --source-map-includeSources
+    command = $UGLIFYJS $in -o $out --in-source-map inline --source-map $out.map --source-map-includeSources
 
 rule copy
     command = cp $in $out
-    
-build out/bundle.js : bundle main.js hello.js
 
-build docs/index.js | docs/index.js.map: ugly out/bundle.js
+build $BROWSERIFY $UGLIFYJS $BABEL : install package.json
+    
+build out/bundle.js : bundle main.js hello.js | $BROWSERIFY
+
+build docs/index.js | docs/index.js.map: ugly out/bundle.js | $UGLIFYJS
 
 build docs/index.html : copy index.html
