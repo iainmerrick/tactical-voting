@@ -7,7 +7,7 @@ require("babel-register");
 const assert = require("assert");
 
 const election = require("../src/election");
-const swing = require("../src/swing");
+const swingometer = require("../src/swingometer");
 
 // See election_test.js for explanation of this data format.
 const DATA = [
@@ -30,14 +30,14 @@ const POLL = { Con: 25, Lab: 50, Lib: 25 };
 // The above poll normalized to fractions.
 const NORMALIZED_POLL = { Con: 0.25, Lab: 0.5, Lib: 0.25 };
 
-assert.deepStrictEqual(swing.normalize_votes(POLL), NORMALIZED_POLL);
+assert.deepStrictEqual(swingometer.normalize_votes(POLL), NORMALIZED_POLL);
 
 
 // Swing is the fractional difference of each party's vote share.
 // Here I have the Conservatives 25 points down, Labour and Lib Dems 12.5% up
 const SWING = { Con: -0.25, Lab: 0.125, Lib: 0.125 };
 
-assert.deepStrictEqual(swing.get_swing(VOTES, POLL), SWING);
+assert.deepStrictEqual(swingometer.get_swing(VOTES, POLL), SWING);
 
 
 // Applying uniform national swing to the original data.
@@ -49,6 +49,6 @@ const FORECAST_DATA = [
     ["Wales",               2.5,    18.75,  8.75    ]
 ];
 
-assert.deepStrictEqual(swing.adjust_data_with_poll(DATA, POLL), FORECAST_DATA);
+assert.deepStrictEqual(swingometer.adjust_data_with_poll(DATA, POLL), FORECAST_DATA);
 
 console.log("Success!");
