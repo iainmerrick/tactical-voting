@@ -5,8 +5,8 @@
 // - Value is an array of aliases.
 // - The first alias is the canonical long name.
 const PARTY_DATA = {
-    Con: ["Conservative"],
-    Lab: ["Labour", "Lab Co-op"],
+    Con: ["Conservative", "C"],
+    Lab: ["Labour", "Lab Co-op", "L"],
     LD: ["Liberal Democrat"],
     DUP: ["Democratic Unionist Party"],
     SNP: ["Scottish National Party"],

@@ -3,9 +3,12 @@ NODE_BIN = node_modules/.bin
 BROWSERIFY = ${NODE_BIN}/browserify
 UGLIFYJS = ${NODE_BIN}/uglifyjs
 BABEL = ${NODE_BIN}/babel
+CSV_TO_JSON = data/election_csv_to_json.js
+
+NODE = .package.json.stamp
 
 rule install
-    command = npm install
+    command = npm install && touch $out
 
 rule babel
     command = $BABEL $in > $out
@@ -16,16 +19,22 @@ rule bundle
 rule ugly
     command = $UGLIFYJS $in -o $out --in-source-map inline --source-map $out.map --source-map-includeSources
 
+rule csv_to_json
+    command = $CSV_TO_JSON $in > $out
+
 rule copy
     command = cp $in $out
 
-build $BROWSERIFY $UGLIFYJS $BABEL : install package.json
+build $NODE: install package.json
 
-build out/main.js : babel main.js
-build out/hello.js : babel hello.js
+build out/main.js : babel main.js | $NODE
+build out/hello.js : babel hello.js | $NODE
     
-build out/bundle.js : bundle out/main.js out/hello.js | $BROWSERIFY
+build out/bundle.js : bundle out/main.js out/hello.js | $NODE
 
-build docs/index.js | docs/index.js.map: ugly out/bundle.js | $UGLIFYJS
+build docs/index.js | docs/index.js.map: ugly out/bundle.js | $NODE
+
+build docs/election_2010.json : csv_to_json data/election_2010.csv | $NODE src/party.js
+build docs/election_2015.json : csv_to_json data/election_2015.csv | $NODE src/party.js
 
 build docs/index.html : copy index.html
