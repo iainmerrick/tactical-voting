@@ -37,7 +37,7 @@ export function get_votes(data) {
     for (i = 1; i < keys.length; i++) {
         votes[i] = 0;
     }
-    for (i = 1; i < votes.length; i++) {
+    for (i = 1; i < data.length; i++) {
         var row = data[i];
         for (j = 1; j < row.length; j++) {
             votes[j] += row[j];
