@@ -1,9 +1,9 @@
 "use strict";
 
-import * as chart from "chart.js";
+import "chart.js";
 
 var ctx = document.getElementById("myChart");
-var myChart = new Chart(ctx, {
+new Chart(ctx, {
     type: 'bar',
     data: {
         labels: ["Red", "Blue", "Yellow", "Green", "Purple", "Orange"],
