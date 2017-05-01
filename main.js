@@ -1,5 +1,6 @@
 "use strict";
 
+import $ from "jquery";
 import "chart.js";
 
 var ctx = document.getElementById("myChart");
@@ -38,4 +39,12 @@ new Chart(ctx, {
             }]
         }
     }
+});
+
+$.getJSON("election_2010.json", function(json) {
+    console.log("Loaded 2010 data - " + json.length + " rows");
+});
+
+$.getJSON("election_2015.json", function(json) {
+    console.log("Loaded 2015 data - " + json.length + " rows");
 });
