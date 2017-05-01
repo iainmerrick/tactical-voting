@@ -17,7 +17,7 @@ rule bundle
     command = $BROWSERIFY --debug $in > $out
 
 rule ugly
-    command = $UGLIFYJS $in -o $out --in-source-map inline --source-map $out.map --source-map-includeSources
+    command = $UGLIFYJS $in -o $out --source-map $out.map --in-source-map inline --source-map-includeSources --compress --mangle
 
 rule csv_to_json
     command = $CSV_TO_JSON $in > $out
@@ -28,9 +28,8 @@ rule copy
 build $NODE: install package.json
 
 build out/main.js : babel main.js | $NODE
-build out/hello.js : babel hello.js | $NODE
     
-build out/bundle.js : bundle out/main.js out/hello.js | $NODE
+build out/bundle.js : bundle out/main.js | $NODE
 
 build docs/index.js | docs/index.js.map: ugly out/bundle.js | $NODE
 
