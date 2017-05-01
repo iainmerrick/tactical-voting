@@ -16,8 +16,10 @@ rule babel
 rule bundle
     command = $BROWSERIFY --debug $in > $out
 
+# The 'cd' is a stupid hack to make uglify generate the correct source map path.
+# I'm sure there's a command-line flag that'll do this but life is short (as are the docs)
 rule ugly
-    command = $UGLIFYJS $in -o $out --source-map $out.map --in-source-map inline --source-map-includeSources --compress --mangle
+    command = cd `dirname $in` && ../$UGLIFYJS `basename $in` -o ../$out --in-source-map inline --source-map ../$out.map --source-map-includeSources --compress --mangle
 
 rule csv_to_json
     command = $CSV_TO_JSON $in > $out
