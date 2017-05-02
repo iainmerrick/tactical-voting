@@ -24,7 +24,7 @@ rule bundle
 # The 'cd' is a stupid hack to make uglify generate the correct source map path.
 # I'm sure there's a command-line flag that'll do this but life is short (as are the docs)
 rule ugly
-    command = cd `dirname $in` && ../$UGLIFYJS `basename $in` -o ../$out --in-source-map inline --source-map ../$out.map --source-map-includeSources
+    command = cd `dirname $in` && ../$UGLIFYJS `basename $in` -o ../$out --in-source-map inline --source-map ../$out.map --source-map-includeSources --compress --mangle
 
 rule csv_to_json
     command = $CSV_TO_JSON $in > $out
