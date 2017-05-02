@@ -1,4 +1,16 @@
+#!/usr/bin/env python
 
+"""Prints build.ninja to stdout"""
+
+import glob
+import os
+import sys
+
+os.chdir(os.path.dirname(sys.argv[0]))
+
+SRCS = glob.glob("src/*.js")
+
+print """
 NODE_BIN = node_modules/.bin
 
 BROWSERIFY = ${NODE_BIN}/browserify
@@ -35,17 +47,19 @@ rule copy
 build build.ninja : generate build.ninja.py
 
 build $NODE: install package.json
+"""
 
-build out/src/election.js : babel src/election.js | $NODE
-build out/src/party.js : babel src/party.js | $NODE
-build out/src/swingometer.js : babel src/swingometer.js | $NODE
-build out/src/tactics.js : babel src/tactics.js | $NODE
+for src in SRCS:
+    print "build out/%(src)s : babel %(src)s | $NODE" % locals()
 
+OUT_SRCS = " ".join(["out/" + src for src in SRCS])
+    
+print """
 build out/main.js : babel main.js | $NODE
-build out/bundle.js : bundle out/main.js | out/src/election.js out/src/party.js out/src/swingometer.js out/src/tactics.js $NODE
+build out/bundle.js : bundle out/main.js | %(OUT_SRCS)s $NODE
 
 build docs/main.js | docs/main.js.map: ugly out/bundle.js | $NODE
-build docs/election_2010.json : csv_to_json data/election_2010.csv | $NODE out/src/election.js out/src/party.js out/src/swingometer.js out/src/tactics.js
-build docs/election_2015.json : csv_to_json data/election_2015.csv | $NODE out/src/election.js out/src/party.js out/src/swingometer.js out/src/tactics.js
+build docs/election_2010.json : csv_to_json data/election_2010.csv | $NODE %(OUT_SRCS)s
+build docs/election_2015.json : csv_to_json data/election_2015.csv | $NODE %(OUT_SRCS)s
 build docs/index.html : copy index.html
-
+""" % locals()
