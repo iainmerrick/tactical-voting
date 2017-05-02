@@ -8,82 +8,67 @@ import * as election from "./src/election.js";
 import * as party from "./src/party.js";
 import * as swingometer from "./src/swingometer.js";
 
-function loadChart(json, div) {
-    let seat_map = election.get_seats(json);
-    let vote_map = election.get_votes(json);
-    vote_map = swingometer.normalize_votes(vote_map);
+let NAMES = [
+    "Con",
+    "Lab",
+    "LD",
+    "UKIP",
+    "SNP",
+    "Green",
+    "Other"
+];
 
-    let vote_pairs = _.pairs(vote_map);
-    // Sort by name, then by descending seat count (preserving name order in ties)
-    vote_pairs = _.sortBy(vote_pairs, function(pair) { return pair[0]; });
-    vote_pairs = _.sortBy(vote_pairs, function(pair) { return -pair[1]; });
+let ZEROES = _.map(NAMES, function(name) { return 0; });
+let COLORS = _.map(NAMES, function(name) { return party.color(name); });
 
-    let names = _.map(vote_pairs, function(pair) { return pair[0]; });
-    let votes = _.map(vote_pairs, function(pair) { return pair[1]; });
-    let seats = _.map(names, function(name) { return seat_map[name]; });
-    let colors = _.map(names, function(name) { return party.color(name); });
+function createCharts(div) {
+    var charts = {
+        votes: [],
+        seats: []
+    };
 
-    let total_seats = json.length - 1;
-    let max_percent = _.max([_.max(votes), _.max(seats) / total_seats]);
-
-    div.find(".bar").each(function(ix, element) {
-        new Chart(element, {
+    div.find(".votes").each(function(ix, element) {
+        let chart = new Chart(element, {
             type: "bar",
             options: {
                 legend: {
                     display: false
                 },
-                scales: {
-                    yAxes: [{
-                        id: "votes",
-                        position: "left",
-                        ticks: {
-                            beginAtZero: true,
-                            suggestedMax: max_percent,
-                            callback: function(value) {
-                                return (value * 100).toFixed(0) + "%";
-                            }
-                        },
-                        gridLines: {
-                            drawOnChartArea: false
-                        },
-                        scaleLabel: {
-                            labelString: "Votes"
-                        }
-                    }, {
-                        id: "seats",
-                        position: "right",
-                        ticks: {
-                            beginAtZero: true,
-                            suggestedMax: max_percent * total_seats
-                        },
-                        scaleLabel: {
-                            labelString: "Seats"
-                        }
-                    }]
-                }
             },
             data: {
-                labels: names,
+                labels: NAMES,
                 datasets: [{
                     label: "Votes",
-                    yAxisID: "votes",
-                    data: votes,
-                    backgroundColor: colors,
-                    borderWidth: 1
-                }, {
-                    label: "Seats",
-                    yAxisID: "seats",
-                    data: seats,
-                    backgroundColor: colors,
-                    borderWidth: 1
+                    data: ZEROES.slice(),
+                    backgroundColor: COLORS
                 }]
             }
         });
+        charts.votes.push(chart);
+    });
+
+    div.find(".seats").each(function(ix, element) {
+        let chart = new Chart(element, {
+            type: "bar",
+            options: {
+                legend: {
+                    display: false
+                },
+            },
+            data: {
+                labels: NAMES,
+                datasets: [{
+                    label: "Seats",
+                    data: ZEROES.slice(),
+                    backgroundColor: COLORS
+                }]
+            }
+        });
+        charts.seats.push(chart);
     });
 
     div.find(".pie").each(function(ix, element) {
-        let pie = new Chart(element, {
+        let chart = new Chart(element, {
             type: "doughnut",
             options: {
                 legend: {
@@ -91,25 +76,49 @@ function loadChart(json, div) {
                 },
             },
             data: {
-                labels: names,
+                labels: NAMES,
                 datasets: [{
                     label: "Seats",
-                    data: seats,
-                    backgroundColor: colors,
-                    borderWidth: 0
+                    borderWidth: 0,
+                    data: ZEROES.slice(),
+                    backgroundColor: COLORS
                 }]
             }
         });
+        charts.seats.push(chart);
     });
+    
+    return charts;
 }
+
+function refreshCharts(charts, json) {
+    let seat_map = election.get_seats(json);
+    let vote_map = election.get_votes(json);
+    vote_map = swingometer.normalize_votes(vote_map);
+
+    for (let votes of charts.votes) {
+        for (let i = 0; i < NAMES.length; ++i) {
+            votes.data.datasets[0].data[i] = vote_map[NAMES[i]];
+        }
+        votes.update();
+    }
+    for (let seats of charts.seats) {
+        for (let i = 0; i < NAMES.length; ++i) {
+            seats.data.datasets[0].data[i] = seat_map[NAMES[i]];
+        }
+        seats.update();
+    }
+}
+
+let election2010 = createCharts($("#election2010"));
+let election2015 = createCharts($("#election2015"));
 
 $.getJSON("election_2010.json", function(json) {
     console.log("Loaded 2010 data - " + json.length + " rows");
-    loadChart(json, $("#election2010"));
+    refreshCharts(election2010, json);
 });
 
 $.getJSON("election_2015.json", function(json) {
     console.log("Loaded 2015 data - " + json.length + " rows");
-    let div = document.getElementById("election2015");
-    loadChart(json, $("#election2015"));
+    refreshCharts(election2015, json);
 });
