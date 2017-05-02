@@ -5,6 +5,7 @@ import $ from "jquery";
 import "chart.js";
 
 import * as election from "./src/election.js";
+import * as party from "./src/party.js";
 
 function loadChart(ctx, json) {
     let seats = election.get_seats(json);
@@ -14,13 +15,15 @@ function loadChart(ctx, json) {
     pairs = _.sortBy(pairs, function(pair) { return -pair[1]; });
     let keys = _.map(pairs, function(pair) { return pair[0]; });
     let values = _.map(pairs, function(pair) { return pair[1]; });
+    let colors = _.map(keys, function(key) { return party.color(key); });
     new Chart(ctx, {
         type: "bar",
         data: {
             labels: keys,
             datasets: [{
                 label: "Seats",
-                data: values
+                data: values,
+                backgroundColor: colors
             }]
         }
     });

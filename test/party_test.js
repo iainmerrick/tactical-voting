@@ -38,4 +38,10 @@ assert.strictEqual(party.takes_seat("lab"), true);
 assert.strictEqual(party.takes_seat("other"), true);
 
 
+// Colors
+assert.strictEqual(party.color("con"), party.color("Conservative"));
+assert.strictEqual(party.color("foo"), party.color("bar"));
+assert.notStrictEqual(party.color("Con"), party.color("Lab"));
+
+
 console.log("Success!");

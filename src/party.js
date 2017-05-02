@@ -34,6 +34,24 @@ for (let short_name in PARTY_DATA) {
     }
 }
 
+// Dictionary of party colors
+// https://en.wikipedia.org/wiki/Wikipedia:Index_of_United_Kingdom_political_parties_meta_attributes
+const PARTY_COLORS = {
+    Con: "#0087DC",
+    Lab: "#DC241f",
+    LD: "#FAA61A",
+    DUP: "#D46A4C",
+    SNP: "#FFFF00",
+    PC: "#008142",
+    SDLP: "#99FF66",
+    Green: "#6AB023",
+    Alliance: "#F6CB2F",
+    UUP: "#9999FF",
+    UKIP: "#70147A",
+    SF: "#008800",
+    Speaker: "#CCCCCC"
+};
+
 /**
  * Get the canonical short version of any party name or synonym
  */ 
@@ -55,4 +73,12 @@ export function long_name(party) {
 export function takes_seat(party) {
     party = short_name(party);
     return party !== "SF" && party !== "Speaker";
+}
+
+/**
+ * Get the party's chart color, as a hex string
+ */
+export function color(party) {
+    party = short_name(party);
+    return PARTY_COLORS[party] || "#444444";
 }
