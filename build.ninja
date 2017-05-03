@@ -37,15 +37,15 @@ build build.ninja : generate build.ninja.py
 build $NODE: install package.json
 
 build out/src/election.js : babel src/election.js | $NODE
+build out/src/main.js : babel src/main.js | $NODE
 build out/src/party.js : babel src/party.js | $NODE
 build out/src/swingometer.js : babel src/swingometer.js | $NODE
 build out/src/tactics.js : babel src/tactics.js | $NODE
 
-build out/main.js : babel main.js | $NODE
-build out/bundle.js : bundle out/main.js | out/src/election.js out/src/party.js out/src/swingometer.js out/src/tactics.js $NODE
+build out/bundle.js : bundle out/src/main.js | out/src/election.js out/src/main.js out/src/party.js out/src/swingometer.js out/src/tactics.js $NODE
 
 build docs/main.js | docs/main.js.map: ugly out/bundle.js | $NODE
-build docs/election_2010.json : csv_to_json data/election_2010.csv | $NODE out/src/election.js out/src/party.js out/src/swingometer.js out/src/tactics.js
-build docs/election_2015.json : csv_to_json data/election_2015.csv | $NODE out/src/election.js out/src/party.js out/src/swingometer.js out/src/tactics.js
-build docs/index.html : copy index.html
+build docs/election_2010.json : csv_to_json data/election_2010.csv | $NODE out/src/election.js out/src/main.js out/src/party.js out/src/swingometer.js out/src/tactics.js
+build docs/election_2015.json : csv_to_json data/election_2015.csv | $NODE out/src/election.js out/src/main.js out/src/party.js out/src/swingometer.js out/src/tactics.js
+build docs/index.html : copy src/index.html
 

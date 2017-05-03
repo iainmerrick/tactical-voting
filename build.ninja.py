@@ -55,11 +55,10 @@ for src in SRCS:
 OUT_SRCS = " ".join(["out/" + src for src in SRCS])
     
 print """
-build out/main.js : babel main.js | $NODE
-build out/bundle.js : bundle out/main.js | %(OUT_SRCS)s $NODE
+build out/bundle.js : bundle out/src/main.js | %(OUT_SRCS)s $NODE
 
 build docs/main.js | docs/main.js.map: ugly out/bundle.js | $NODE
 build docs/election_2010.json : csv_to_json data/election_2010.csv | $NODE %(OUT_SRCS)s
 build docs/election_2015.json : csv_to_json data/election_2015.csv | $NODE %(OUT_SRCS)s
-build docs/index.html : copy index.html
+build docs/index.html : copy src/index.html
 """ % locals()

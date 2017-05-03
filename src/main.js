@@ -4,10 +4,10 @@ import _ from "underscore";
 import $ from "jquery";
 import "chart.js";
 
-import * as election from "./src/election.js";
-import * as party from "./src/party.js";
-import * as swingometer from "./src/swingometer.js";
-import * as tactics from "./src/tactics.js";
+import * as election from "./election.js";
+import * as party from "./party.js";
+import * as swingometer from "./swingometer.js";
+import * as tactics from "./tactics.js";
 
 const NAMES = [
     "Con",
