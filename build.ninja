@@ -50,7 +50,7 @@ build out/src/view.js : babel src/view.js | $NODE
 build out/bundle.js : bundle out/src/main.js | out/src/main.js out/src/model.js out/src/view.js $NODE
 
 build docs/main.js | docs/main.js.map: ugly out/bundle.js | $NODE
-build docs/election_2010.json : csv_to_json data/election_2010.csv | $NODE out/src/main.js out/src/model.js out/src/view.js
-build docs/election_2015.json : csv_to_json data/election_2015.csv | $NODE out/src/main.js out/src/model.js out/src/view.js
+build docs/election_2010.json : csv_to_json data/election_2010.csv | $NODE $CSV_TO_JSON out/src/model.js
+build docs/election_2015.json : csv_to_json data/election_2015.csv | $NODE $CSV_TO_JSON out/src/model.js
 build docs/index.html : html_minify src/index.html
 

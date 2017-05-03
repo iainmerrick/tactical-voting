@@ -65,7 +65,7 @@ print """
 build out/bundle.js : bundle out/src/main.js | %(OUT_SRCS)s $NODE
 
 build docs/main.js | docs/main.js.map: ugly out/bundle.js | $NODE
-build docs/election_2010.json : csv_to_json data/election_2010.csv | $NODE %(OUT_SRCS)s
-build docs/election_2015.json : csv_to_json data/election_2015.csv | $NODE %(OUT_SRCS)s
+build docs/election_2010.json : csv_to_json data/election_2010.csv | $NODE $CSV_TO_JSON out/src/model.js
+build docs/election_2015.json : csv_to_json data/election_2015.csv | $NODE $CSV_TO_JSON out/src/model.js
 build docs/index.html : html_minify src/index.html
 """ % locals()
