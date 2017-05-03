@@ -45,9 +45,10 @@ build $NODE: install package.json
 
 build out/src/main.js : babel src/main.js | $NODE
 build out/src/model.js : babel src/model.js | $NODE
+build out/src/utils.js : babel src/utils.js | $NODE
 build out/src/view.js : babel src/view.js | $NODE
 
-build out/bundle.js : bundle out/src/main.js | out/src/main.js out/src/model.js out/src/view.js $NODE
+build out/bundle.js : bundle out/src/main.js | out/src/main.js out/src/model.js out/src/utils.js out/src/view.js $NODE
 
 build docs/main.js | docs/main.js.map: ugly out/bundle.js | $NODE
 build docs/election_2010.json : csv_to_json data/election_2010.csv | $NODE $CSV_TO_JSON out/src/model.js

@@ -3,8 +3,10 @@
 import _ from "underscore";
 import $ from "jquery";
 import "chart.js";
+import "chartjs-plugin-annotation";
 
 import * as model from "./model";
+import * as utils from "./utils";
 
 // https://en.wikipedia.org/wiki/Wikipedia:Index_of_United_Kingdom_political_parties_meta_attributes
 const PARTY_COLORS = {
@@ -100,11 +102,28 @@ export class View {
                     },
                     scales: {
                         yAxes: [{
+                            id: "seats-axis",
                             ticks: {
                                 beginAtZero: true,
                                 max: 400
                             }
                         }]
+                    },
+                    annotation: {
+                        annotations: [{
+                            type: "line",
+                            mode: "horizontal",
+                            scaleID: "seats-axis",
+                            borderColor: "#444444",
+                            borderWidth: 2,
+                            borderDash: [6, 2],
+                            value: 330,
+                            label: {
+                                enabled: true,
+                                position: "right",
+                                content: "330 needed for majority"
+                            }
+                        }],
                     }
                 },
                 data: {
@@ -157,10 +176,14 @@ export class View {
         let vote_map = model.normalize_votes(model.get_votes(data));
         let seat_map = model.get_seats(data);
         let used_seat_map = model.remove_unused_seats(seat_map);
+        console.log(seat_map);
+        console.log(used_seat_map);
 
         let votes = model.count_by_party(vote_map, NAMES);
         let seats = model.count_by_party(seat_map, NAMES);
         let used_seats = model.count_by_party(used_seat_map, NAMES);
+        console.log(seats);
+        console.log(used_seats);
 
         for (let chart of this.vote_charts) {
             for (let i = 0; i < NAMES.length; ++i) {
@@ -171,6 +194,12 @@ export class View {
         for (let chart of this.seat_charts) {
             for (let i = 0; i < NAMES.length; ++i) {
                 chart.data.datasets[0].data[i] = used_seats[i];
+            }
+            if (chart.options.annotation) {
+                let needed = Math.ceil(utils.sum(used_seats) / 2 + 0.01);
+                let annotation = chart.options.annotation.annotations[0];
+                annotation.value = needed;
+                annotation.label.content = needed + " seats needed for majority";
             }
             chart.update();
         }

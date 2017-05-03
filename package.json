@@ -6,6 +6,7 @@
     "babyparse": "^0.4.6",
     "browserify": "^14.3.0",
     "chart.js": "^2.5.0",
+    "chartjs-plugin-annotation": "^0.5.2",
     "html-minifier": "^3.4.3",
     "jquery": "^3.2.1",
     "uglify-js": "^2.8.22",
