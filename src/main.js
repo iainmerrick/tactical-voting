@@ -4,10 +4,7 @@ import _ from "underscore";
 import $ from "jquery";
 import "chart.js";
 
-import * as election from "./election.js";
-import * as party from "./party.js";
-import * as swingometer from "./swingometer.js";
-import * as tactics from "./tactics.js";
+import * as model from "./model.js";
 
 const NAMES = [
     "Con",
@@ -20,7 +17,7 @@ const NAMES = [
 ];
 
 const ZEROES = _.map(NAMES, function(name) { return 0; });
-const COLORS = _.map(NAMES, function(name) { return party.color(name); });
+const COLORS = _.map(NAMES, function(name) { return model.party_color(name); });
 
 class ElectionView {
 
@@ -37,7 +34,6 @@ class ElectionView {
             view.checkbox_map[checkbox.name] = checkbox;
         });
         div.find("input:checkbox").change(function(element) {
-            console.log("Clicked checkbox: " + element.name);
             view.update();
         });
 
@@ -133,13 +129,11 @@ class ElectionView {
             }
         }
 
-        console.log("Voting bloc: " + bloc);
-        let data = tactics.adjust_data_with_tactics(this.json, bloc);
+        let data = model.adjust_data_with_tactics(this.json, bloc);
         
-        let seat_map = election.get_seats(data);
-        console.log(seat_map);
-        let vote_map = election.get_votes(data);
-        vote_map = swingometer.normalize_votes(vote_map);
+        let seat_map = model.get_seats(data);
+        let vote_map = model.get_votes(data);
+        vote_map = model.normalize_votes(vote_map);
 
         for (let votes of this.vote_charts) {
             for (let i = 0; i < NAMES.length; ++i) {

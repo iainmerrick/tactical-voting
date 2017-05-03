@@ -6,7 +6,7 @@ require("babel-register");
 
 const babyparse = require("babyparse");
 
-const party = require("../src/party");
+const model = require("../src/model");
 
 // First things first. Parse the CSV!
 
@@ -37,7 +37,7 @@ for (let row of csv.data) {
 let parties = []; // Canonical party names as they'll appear in the output
 let column_to_party = {}; // Map of input column -> output party name
 for (let i = first_party_column; i < num_columns; ++i) {
-    let name = party.short_name(csv.data[0][i]);
+    let name = model.party_name(csv.data[0][i]);
     if (parties.indexOf(name) < 0) {
         parties.push(name);
     }
