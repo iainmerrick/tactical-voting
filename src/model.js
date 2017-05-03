@@ -155,6 +155,42 @@ export function get_seats(data) {
     return seat_map;
 }
 
+/**
+ * Given a party -> seats map, remove abstentionist parties (i.e. those who don't sit)
+ * @param seat_map - map of party name -> seat count
+ * @return map of party name -> seat count
+ */
+export function remove_unused_seats(seat_map) {
+    var result = {};
+    for (let party in seat_map) {
+        result[party] = party_takes_seat(party) ? seat_map[party] : 0;
+    }
+    return result;
+}
+
+/**
+ * Get votes or seats for the given parties, in order.
+ * Parties not listed will be counted as "Other".
+ * @param votes_or_seats - map of party name -> seat count or vote count
+ * @param parties - list of party names
+ * @return list of votes or seats for the corresponding parties
+ */
+export function count_by_party(votes_or_seats, parties) {
+    var count = {};
+    for (let party in votes_or_seats) {
+        if (parties.indexOf(party) >= 0) {
+            count[party] = (count[party] || 0) + votes_or_seats[party];
+        } else {
+            count.Other = (count.Other || 0) +  votes_or_seats[party];
+        }
+    }
+    var result = [];
+    for (let party of parties) {
+        result.push(count[party]);
+    }
+    return result;
+}
+
 // ---------------------------------------------------------------------------------------
 // Tactical voting
 

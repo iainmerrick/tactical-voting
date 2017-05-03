@@ -91,6 +91,46 @@ let TIE_SEATS = { Con: 1.5, Lab: 0.5 };
 
 assert.deepStrictEqual(model.get_seats(TIE), TIE_SEATS);
 
+let SEATS_WITH_ABSTENTIONISTS = {
+    Con: 10,
+    Lab: 5,
+    LD: 3,
+    SF: 1,
+    Speaker: 1,
+    Other: 1
+}
+
+let SEATS_WITHOUT_ABSTENTIONISTS = {
+    Con: 10,
+    Lab: 5,
+    LD: 3,
+    SF: 0,
+    Speaker: 0,
+    Other: 1
+}
+
+assert.deepStrictEqual(
+    SEATS_WITHOUT_ABSTENTIONISTS,
+    model.remove_unused_seats(SEATS_WITH_ABSTENTIONISTS));
+
+assert.deepStrictEqual([10, 5],
+    model.count_by_party(SEATS_WITH_ABSTENTIONISTS, ["Con", "Lab"]));
+
+assert.deepStrictEqual([10, 5, 6],
+    model.count_by_party(SEATS_WITH_ABSTENTIONISTS, ["Con", "Lab", "Other"]));
+
+assert.deepStrictEqual([10, 5, 3, 3],
+    model.count_by_party(SEATS_WITH_ABSTENTIONISTS, ["Con", "Lab", "LD", "Other"]));
+
+assert.deepStrictEqual([10, 5],
+    model.count_by_party(SEATS_WITHOUT_ABSTENTIONISTS, ["Con", "Lab"]));
+
+assert.deepStrictEqual([10, 5, 4],
+    model.count_by_party(SEATS_WITHOUT_ABSTENTIONISTS, ["Con", "Lab", "Other"]));
+
+assert.deepStrictEqual([10, 5, 3, 1],
+    model.count_by_party(SEATS_WITHOUT_ABSTENTIONISTS, ["Con", "Lab", "LD", "Other"]));
+
 // ---------------------------------------------------------------------------------------
 // Tactical voting
 

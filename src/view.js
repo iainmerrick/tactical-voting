@@ -131,21 +131,25 @@ export class View {
 
         let data = model.adjust_data_with_tactics(this.json, bloc);
         
+        let vote_map = model.normalize_votes(model.get_votes(data));
         let seat_map = model.get_seats(data);
-        let vote_map = model.get_votes(data);
-        vote_map = model.normalize_votes(vote_map);
+        let used_seat_map = model.remove_unused_seats(seat_map);
 
-        for (let votes of this.vote_charts) {
+        let votes = model.count_by_party(vote_map, NAMES);
+        let seats = model.count_by_party(seat_map, NAMES);
+        let used_seats = model.count_by_party(used_seat_map, NAMES);
+
+        for (let chart of this.vote_charts) {
             for (let i = 0; i < NAMES.length; ++i) {
-                votes.data.datasets[0].data[i] = vote_map[NAMES[i]];
+                chart.data.datasets[0].data[i] = votes[i];
             }
-            votes.update();
+            chart.update();
         }
-        for (let seats of this.seat_charts) {
+        for (let chart of this.seat_charts) {
             for (let i = 0; i < NAMES.length; ++i) {
-                seats.data.datasets[0].data[i] = seat_map[NAMES[i]];
+                chart.data.datasets[0].data[i] = used_seats[i];
             }
-            seats.update();
+            chart.update();
         }
     }
 }
