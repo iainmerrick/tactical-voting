@@ -40,11 +40,6 @@ assert.strictEqual(model.party_takes_seat("con"), true);
 assert.strictEqual(model.party_takes_seat("lab"), true);
 assert.strictEqual(model.party_takes_seat("other"), true);
 
-// Colors
-assert.strictEqual(model.party_color("con"), model.party_color("Conservative"));
-assert.strictEqual(model.party_color("foo"), model.party_color("bar"));
-assert.notStrictEqual(model.party_color("Con"), model.party_color("Lab"));
-
 // ---------------------------------------------------------------------------------------
 // Elections
 

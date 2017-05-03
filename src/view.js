@@ -6,6 +6,29 @@ import "chart.js";
 
 import * as model from "./model";
 
+// https://en.wikipedia.org/wiki/Wikipedia:Index_of_United_Kingdom_political_parties_meta_attributes
+const PARTY_COLORS = {
+    Con: "#0087DC",
+    Lab: "#DC241f",
+    LD: "#FAA61A",
+    DUP: "#D46A4C",
+    SNP: "#FFFF00",
+    PC: "#008142",
+    SDLP: "#99FF66",
+    Green: "#6AB023",
+    Alliance: "#F6CB2F",
+    UUP: "#9999FF",
+    UKIP: "#70147A",
+    SF: "#008800",
+    Speaker: "#444444"
+};
+
+function party_color(party) {
+    party = model.party_name(party);
+    return PARTY_COLORS[party] || "#CCCCCC";
+}
+
+// These are the party names we'll actually show on our charts, in order.
 const NAMES = [
     "Con",
     "Lab",
@@ -17,7 +40,7 @@ const NAMES = [
 ];
 
 const ZEROES = _.map(NAMES, function(name) { return 0; });
-const COLORS = _.map(NAMES, function(name) { return model.party_color(name); });
+const COLORS = _.map(NAMES, function(name) { return party_color(name); });
 
 export class View {
 
