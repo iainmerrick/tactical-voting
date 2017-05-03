@@ -52,7 +52,10 @@ class ElectionView {
                         yAxes: [{
                             ticks: {
                                 beginAtZero: true,
-                                max: 0.5
+                                max: 0.5,
+                                callback: function(value) {
+                                    return (value * 100).toFixed(0) + "%";
+                                }
                             }
                         }]
                     }
