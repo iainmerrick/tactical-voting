@@ -68,4 +68,6 @@ build docs/main.js | docs/main.js.map: ugly out/bundle.js | $NODE
 build docs/election_2010.json : csv_to_json data/election_2010.csv | $NODE $CSV_TO_JSON out/src/model.js
 build docs/election_2015.json : csv_to_json data/election_2015.csv | $NODE $CSV_TO_JSON out/src/model.js
 build docs/index.html : html_minify src/index.html
+build docs/bootstrap.min.css : copy node_modules/bootstrap/dist/css/bootstrap.min.css | $NODE
+build docs/bootstrap.min.css.map : copy node_modules/bootstrap/dist/css/bootstrap.min.css.map | $NODE
 """ % locals()

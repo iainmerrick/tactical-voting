@@ -1,8 +1,12 @@
 "use strict";
 
+import $ from "jquery";
+
 import * as view from "./view";
 
-import $ from "jquery";
+// Ugh, looks like Bootstrap doesn't work with ES6 properly
+window.jQuery = $;
+require("bootstrap");
 
 $.getJSON("election_2010.json", function(json) {
     console.log("Loaded 2010 data - " + json.length + " rows");
