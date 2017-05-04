@@ -25,9 +25,10 @@ const PARTY_COLORS = {
     Speaker: "#444444"
 };
 
+const GREY = "#CCCCCC";
 function party_color(party) {
     party = model.party_name(party);
-    return PARTY_COLORS[party] || "#CCCCCC";
+    return PARTY_COLORS[party] || GREY;
 }
 
 // These are the party names we'll actually show on our charts, in order.
@@ -101,8 +102,19 @@ export class View {
                         display: false
                     },
                     scales: {
+                        xAxes: [{
+                            id: "party-axis",
+                            gridLines: {
+                                display: false,
+                                color: "white",
+                                lineWidth: 0
+                            },
+                            categoryPercentage: 1.0,
+                            barPerentage: 0.9
+                        }],
                         yAxes: [{
                             id: "seats-axis",
+                            display: false,
                             ticks: {
                                 beginAtZero: true,
                                 max: 400
@@ -114,14 +126,17 @@ export class View {
                             type: "line",
                             mode: "horizontal",
                             scaleID: "seats-axis",
-                            borderColor: "#444444",
-                            borderWidth: 2,
-                            borderDash: [6, 2],
+                            borderColor: GREY,
+                            borderWidth: 3,
+                            borderDash: [3, 3],
                             value: 330,
                             label: {
+                                content: "330 needed for majority",
                                 enabled: true,
                                 position: "right",
-                                content: "330 needed for majority"
+                                fontColor: Chart.defaults.global.defaultFontColor,
+                                fontStyle: "normal",
+                                backgroundColor: "white"
                             }
                         }],
                     }
@@ -197,9 +212,10 @@ export class View {
             }
             if (chart.options.annotation) {
                 let needed = Math.ceil(utils.sum(used_seats) / 2 + 0.01);
-                let annotation = chart.options.annotation.annotations[0];
-                annotation.value = needed;
-                annotation.label.content = needed + " seats needed for majority";
+                for (let annotation of chart.options.annotation.annotations) {
+                    annotation.value = needed;
+                    annotation.label.content = needed + " needed for majority";
+                }
             }
             chart.update();
         }
