@@ -56,6 +56,25 @@ export class View {
 
         let view = this;
 
+        div.find("table").each(function(ix, table) {
+            for (let name of NAMES) {
+                if (name === "Other") {
+                    // No tactical voting checkbox for 'Other'
+                    $(`<tr id='${name}'>
+                        <td>${name}
+                        <td>
+                        <td>
+                    </tr>`).appendTo(table);
+                } else {
+                    $(`<tr id='${name}'>
+                        <td>${name}
+                        <td>
+                        <td><label><input type='checkbox' name='${name}'> <span class='info'></span></label>
+                    </tr>`).appendTo(table);
+                }
+            }
+        });
+
         div.find("input:checkbox").each(function(ix, checkbox) {
             view.checkbox_map[checkbox.name] = checkbox;
         });
