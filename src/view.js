@@ -58,19 +58,22 @@ export class View {
 
         div.find("table").each(function(ix, table) {
             for (let name of NAMES) {
+                let color = party_color(name);
                 let tr;
                 if (name === "Other") {
                     // No tactical voting checkbox for 'Other'
                     tr = $(`<tr id='${name}'>
                         <td>${name}
-                        <td class='vote'>
+                        <td class='vote' style='text-align: right'>
+                        <td><div class='hbar' style='background-color: ${color}; width: 0%; height: 1.5em;'></div>
                         <td>
                     </tr>`);
                 } else {
                     // No tactical voting checkbox for 'Other'
                     tr = $(`<tr id='${name}'>
                         <td>${name}
-                        <td class='vote'>
+                        <td class='vote' style='text-align: right'>
+                        <td><div class='hbar' style='background-color: ${color}; width: 0%; height: 1.5em;'></div>
                         <td><label><input type='checkbox' name='${name}'> <span class='info'></span></label>
                     </tr>`);
                 }
@@ -276,11 +279,10 @@ export class View {
         }
         this.div.find("tr").each(function(ix, tr) {
             let party = tr.id;
+            let vote = 100 * vote_map[party];
             $(tr).find("td.vote").each(function(ix, td) {
                 let oldText = $(td).text();
-                let newText = (100 * vote_map[party]).toFixed(1) + "%";
-                console.log(oldText);
-                console.log(newText);
+                let newText = vote.toFixed(1) + "";
                 if (!(oldText === newText)) {
                     console.log("Updating " + td);
                     $(td).fadeOut(200, function() {
@@ -288,6 +290,7 @@ export class View {
                     });
                 }
             });
+            $(tr).find(".hbar").animate({width: (vote * 1.75) + "%"}, 400);
         });
     }
 }
