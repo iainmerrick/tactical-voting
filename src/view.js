@@ -63,8 +63,8 @@ export class View {
                     // No tactical voting checkbox for 'Other'
                     tr = $(`<tr id='${name}'>
                         <td>${name}
-                        <td id='vote'>
-                        <td id='tactics'>
+                        <td class='vote'>
+                        <td>
                     </tr>`);
                 } else {
                     // No tactical voting checkbox for 'Other'
@@ -260,6 +260,7 @@ export class View {
                 if (n > 0) {
                     // HACK: add 1 seat, to ensure that at least one pixel is drawn
                     // The difference between 0 seats and 1 seat is pretty significant!
+                    // (This doesn't affect the actual results, just the visualization)
                     n += 1;
                 }
                 chart.data.datasets[0].data[i] = n;
@@ -273,5 +274,20 @@ export class View {
             }
             chart.update();
         }
+        this.div.find("tr").each(function(ix, tr) {
+            let party = tr.id;
+            $(tr).find("td.vote").each(function(ix, td) {
+                let oldText = $(td).text();
+                let newText = (100 * vote_map[party]).toFixed(1) + "%";
+                console.log(oldText);
+                console.log(newText);
+                if (!(oldText === newText)) {
+                    console.log("Updating " + td);
+                    $(td).fadeOut(200, function() {
+                        $(td).text(newText).fadeIn(200);
+                    });
+                }
+            });
+        });
     }
 }
