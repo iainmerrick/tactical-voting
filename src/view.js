@@ -58,20 +58,31 @@ export class View {
 
         div.find("table").each(function(ix, table) {
             for (let name of NAMES) {
+                let tr;
                 if (name === "Other") {
                     // No tactical voting checkbox for 'Other'
-                    $(`<tr id='${name}'>
+                    tr = $(`<tr id='${name}'>
                         <td>${name}
-                        <td>
-                        <td>
-                    </tr>`).appendTo(table);
+                        <td id='vote'>
+                        <td id='tactics'>
+                    </tr>`);
                 } else {
-                    $(`<tr id='${name}'>
+                    // No tactical voting checkbox for 'Other'
+                    tr = $(`<tr id='${name}'>
                         <td>${name}
-                        <td>
+                        <td class='vote'>
                         <td><label><input type='checkbox' name='${name}'> <span class='info'></span></label>
-                    </tr>`).appendTo(table);
+                    </tr>`);
                 }
+                tr.click(function(event) {
+                    if (event.target.tagName.toLowerCase() === "input") {
+                        // Click was on a checkbox, it will already be handled correctly
+                    } else {
+                        // Click on another part of the row -- simulate click on checkbox
+                        tr.find("input").trigger("click");
+                    }
+                });
+                tr.appendTo(table);
             }
         });
 
