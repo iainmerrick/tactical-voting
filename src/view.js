@@ -80,7 +80,13 @@ export class View {
                                 }
                             }
                         }]
-                    }
+                    },
+                    tooltips: {
+                        enabled: false
+                    },
+                    hover: {
+                        mode: null
+                    },
                 },
                 data: {
                     labels: NAMES,
@@ -139,7 +145,13 @@ export class View {
                                 backgroundColor: "white"
                             }
                         }],
-                    }
+                    },
+                    tooltips: {
+                        enabled: false
+                    },
+                    hover: {
+                        mode: null
+                    },
                 },
                 data: {
                     labels: NAMES,
@@ -159,6 +171,12 @@ export class View {
                 options: {
                     legend: {
                         display: false
+                    },
+                    tooltips: {
+                        enabled: false
+                    },
+                    hover: {
+                        mode: null
                     },
                 },
                 data: {
@@ -208,12 +226,18 @@ export class View {
         }
         for (let chart of this.seat_charts) {
             for (let i = 0; i < NAMES.length; ++i) {
-                chart.data.datasets[0].data[i] = used_seats[i];
+                let n = used_seats[i];
+                if (n > 0) {
+                    // HACK: add 1 seat, to ensure that at least one pixel is drawn
+                    // The difference between 0 seats and 1 seat is pretty significant!
+                    n += 1;
+                }
+                chart.data.datasets[0].data[i] = n;
             }
             if (chart.options.annotation) {
                 let needed = Math.ceil(utils.sum(used_seats) / 2 + 0.01);
                 for (let annotation of chart.options.annotation.annotations) {
-                    annotation.value = needed;
+                    annotation.value = needed + 1; // See HACK above
                     annotation.label.content = needed + " needed for majority";
                 }
             }
