@@ -62,19 +62,21 @@ export class View {
                 let tr;
                 if (name === "Other") {
                     // No tactical voting checkbox for 'Other'
-                    tr = $(`<tr id='${name}'>
+                    tr = $(`<tr class='party' id='${name}'>
+                        <td>
                         <td>${name}
                         <td class='vote' style='text-align: right'>
                         <td><div class='hbar' style='background-color: ${color}; width: 0%; height: 1.5em;'></div>
-                        <td>
+                        <td class='impact'>
                     </tr>`);
                 } else {
                     // No tactical voting checkbox for 'Other'
-                    tr = $(`<tr id='${name}'>
+                    tr = $(`<tr class='party' id='${name}'>
+                        <td><label><input type='checkbox' name='${name}'></label>
                         <td>${name}
                         <td class='vote' style='text-align: right'>
                         <td><div class='hbar' style='background-color: ${color}; width: 0%; height: 1.5em;'></div>
-                        <td><label><input type='checkbox' name='${name}'> <span class='info'></span></label>
+                        <td class='impact'>
                     </tr>`);
                 }
                 tr.click(function(event) {
@@ -93,7 +95,7 @@ export class View {
             view.checkbox_map[checkbox.name] = checkbox;
         });
         div.find("input:checkbox").change(function(element) {
-            view.update();
+            view.update(false);
         });
 
         div.find("canvas.votes").each(function(ix, canvas) {
@@ -225,10 +227,10 @@ export class View {
             view.seat_charts.push(chart);
         });
 
-        this.update();
+        this.update(true);
     }
 
-    update() {
+    update(force) {
         let bloc = [];
         for (let party in this.checkbox_map) {
             let checkbox = this.checkbox_map[party];
@@ -237,6 +239,9 @@ export class View {
             }
         }
 
+        let old_vote_map = model.normalize_votes(model.get_votes(this.json));
+        let old_seat_map = model.get_seats(this.json);
+        
         let data = model.adjust_data_with_tactics(this.json, bloc);
         
         let vote_map = model.normalize_votes(model.get_votes(data));
@@ -277,20 +282,37 @@ export class View {
             }
             chart.update();
         }
-        this.div.find("tr").each(function(ix, tr) {
+        $(this.div).find("tr.party").each(function(ix, tr) {
             let party = tr.id;
-            let vote = 100 * vote_map[party];
-            $(tr).find("td.vote").each(function(ix, td) {
-                let oldText = $(td).text();
-                let newText = vote.toFixed(1) + "";
-                if (!(oldText === newText)) {
-                    console.log("Updating " + td);
+            let old_vote = old_vote_map[party];
+            let new_vote = vote_map[party];
+            console.log(party);
+            console.log(old_vote);
+            console.log(new_vote);
+            if (force || !(old_vote === new_vote)) {
+                $(tr).find("td.vote").each(function(ix, td) {
                     $(td).fadeOut(200, function() {
-                        $(td).text(newText).fadeIn(200);
+                        $(td).text((100 * new_vote).toFixed(1) + "").fadeIn(200);
+                    });
+                });
+                $(tr).find(".hbar").animate({width: (new_vote * 175) + "%"}, 400);
+            }
+
+            let old_seats = old_seat_map[party];
+            let new_seats = seat_map[party];
+            let delta = new_seats - old_seats;
+            let delta_text;
+            delta_text = (delta > 0 ? "+" : "") + delta + " seat";
+            if (Math.abs(delta) > 1) delta_text += "s";
+            if (delta == 0) delta_text = "";
+            $(tr).find("td.impact").each(function(ix, td) {
+                let old_text = $(td).text();
+                if (!(old_text === delta_text)) {
+                    $(td).fadeOut(200, function() {
+                        $(td).text(delta_text).fadeIn(200);
                     });
                 }
             });
-            $(tr).find(".hbar").animate({width: (vote * 1.75) + "%"}, 400);
         });
     }
 }
