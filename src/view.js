@@ -37,8 +37,9 @@ const NAMES = [
     "Lab",
     "LD",
     "UKIP",
-    "SNP",
     "Green",
+    "SNP",
+    "PC",
     "Other",
 ];
 
