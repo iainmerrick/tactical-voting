@@ -295,7 +295,7 @@ export class View {
                         $(td).text((100 * new_vote).toFixed(1) + "").fadeIn(200);
                     });
                 });
-                $(tr).find(".hbar").animate({width: (new_vote * 175) + "%"}, 400);
+                $(tr).find(".hbar").animate({width: (new_vote * 200) + "%"}, 400);
             }
 
             let old_seats = old_seat_map[party];
