@@ -59,25 +59,15 @@ export class View {
         div.find("table").each(function(ix, table) {
             for (let name of NAMES) {
                 let color = party_color(name);
-                let tr;
+                let tr = $(`<tr class='party' id='${name}'>
+                    <td>${name}
+                    <td class='vote' style='text-align: right'>
+                    <td><div class='hbar' style='background-color: ${color}; width: 0%; height: 1.5em;'></div>
+                    <td><label><input type='checkbox' name='${name}'></label>&nbsp;&nbsp;<span class='impact'>
+                </tr>`);
                 if (name === "Other") {
                     // No tactical voting checkbox for 'Other'
-                    tr = $(`<tr class='party' id='${name}'>
-                        <td>
-                        <td>${name}
-                        <td class='vote' style='text-align: right'>
-                        <td><div class='hbar' style='background-color: ${color}; width: 0%; height: 1.5em;'></div>
-                        <td class='impact'>
-                    </tr>`);
-                } else {
-                    // No tactical voting checkbox for 'Other'
-                    tr = $(`<tr class='party' id='${name}'>
-                        <td><label><input type='checkbox' name='${name}'></label>
-                        <td>${name}
-                        <td class='vote' style='text-align: right'>
-                        <td><div class='hbar' style='background-color: ${color}; width: 0%; height: 1.5em;'></div>
-                        <td class='impact'>
-                    </tr>`);
+                    tr.find("label").css("visibility", "hidden");
                 }
                 tr.click(function(event) {
                     if (event.target.tagName.toLowerCase() === "input") {
@@ -266,17 +256,17 @@ export class View {
             for (let i = 0; i < NAMES.length; ++i) {
                 let n = used_seats[i];
                 if (n > 0) {
-                    // HACK: add 1 seat, to ensure that at least one pixel is drawn
+                    // HACK: add 2 seats, to ensure that at least one pixel is drawn
                     // The difference between 0 seats and 1 seat is pretty significant!
                     // (This doesn't affect the actual results, just the visualization)
-                    n += 1;
+                    n += 2;
                 }
                 chart.data.datasets[0].data[i] = n;
             }
             if (chart.options.annotation) {
                 let needed = Math.ceil(utils.sum(used_seats) / 2 + 0.01);
                 for (let annotation of chart.options.annotation.annotations) {
-                    annotation.value = needed + 1; // See HACK above
+                    annotation.value = needed + 2; // See HACK above
                     annotation.label.content = needed + " needed for majority";
                 }
             }
@@ -284,19 +274,18 @@ export class View {
         }
         $(this.div).find("tr.party").each(function(ix, tr) {
             let party = tr.id;
-            let old_vote = old_vote_map[party];
             let new_vote = vote_map[party];
-            console.log(party);
-            console.log(old_vote);
-            console.log(new_vote);
-            if (force || !(old_vote === new_vote)) {
-                $(tr).find("td.vote").each(function(ix, td) {
+            let new_text = (100 * new_vote).toFixed(1) + "";
+            $(tr).find(".vote").each(function(ix, td) {
+                let old_text = $(td).text();
+                if (!(old_text === new_text)) {
                     $(td).fadeOut(200, function() {
-                        $(td).text((100 * new_vote).toFixed(1) + "").fadeIn(200);
+                        $(td).text(new_text).fadeIn(200);
                     });
-                });
-                $(tr).find(".hbar").animate({width: (new_vote * 200) + "%"}, 400);
-            }
+                }
+            });
+
+            $(tr).find(".hbar").animate({width: (new_vote * 200) + "%"}, 400);
 
             let old_seats = old_seat_map[party];
             let new_seats = seat_map[party];
@@ -305,7 +294,7 @@ export class View {
             delta_text = (delta > 0 ? "+" : "") + delta + " seat";
             if (Math.abs(delta) > 1) delta_text += "s";
             if (delta == 0) delta_text = "";
-            $(tr).find("td.impact").each(function(ix, td) {
+            $(tr).find(".impact").each(function(ix, td) {
                 let old_text = $(td).text();
                 if (!(old_text === delta_text)) {
                     $(td).fadeOut(200, function() {
