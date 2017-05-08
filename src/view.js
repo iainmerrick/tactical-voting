@@ -298,6 +298,10 @@ export class View {
                 let old_text = $(td).text();
                 if (!(old_text === delta_text)) {
                     $(td).fadeOut(200, function() {
+                        $(td).removeClass("text-success");
+                        $(td).removeClass("text-danger");
+                        if (delta > 0) $(td).addClass("text-success");
+                        if (delta < 0) $(td).addClass("text-danger");
                         $(td).text(delta_text).fadeIn(200);
                     });
                 }
