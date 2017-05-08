@@ -22,7 +22,7 @@ const PARTY_COLORS = {
     UUP: "#9999FF",
     UKIP: "#70147A",
     SF: "#008800",
-    Speaker: "#444444"
+    Speaker: "#444444",
 };
 
 const GREY = "#CCCCCC";
@@ -39,7 +39,7 @@ const NAMES = [
     "UKIP",
     "SNP",
     "Green",
-    "Other"
+    "Other",
 ];
 
 const ZEROES = _.map(NAMES, function(name) { return 0; });
@@ -53,6 +53,8 @@ export class View {
         this.checkbox_map = {};
         this.vote_charts = [];
         this.seat_charts = [];
+        this.votes = ZEROES;
+        this.seats = ZEROES;
 
         let view = this;
 
@@ -68,15 +70,16 @@ export class View {
                 if (name === "Other") {
                     // No tactical voting checkbox for 'Other'
                     tr.find("label").css("visibility", "hidden");
+                } else {
+                    tr.click(function(event) {
+                        if (event.target.tagName.toLowerCase() === "input") {
+                            // Click was on a checkbox, it will already be handled correctly
+                        } else {
+                            // Click on another part of the row -- simulate click on checkbox
+                            tr.find("input").trigger("click");
+                        }
+                    });
                 }
-                tr.click(function(event) {
-                    if (event.target.tagName.toLowerCase() === "input") {
-                        // Click was on a checkbox, it will already be handled correctly
-                    } else {
-                        // Click on another part of the row -- simulate click on checkbox
-                        tr.find("input").trigger("click");
-                    }
-                });
                 tr.appendTo(table);
             }
         });
@@ -86,43 +89,6 @@ export class View {
         });
         div.find("input:checkbox").change(function(element) {
             view.update(false);
-        });
-
-        div.find("canvas.votes").each(function(ix, canvas) {
-            let chart = new Chart(canvas, {
-                type: "bar",
-                options: {
-                    legend: {
-                        display: false
-                    },
-                    scales: {
-                        yAxes: [{
-                            ticks: {
-                                beginAtZero: true,
-                                max: 0.5,
-                                callback: function(value) {
-                                    return (value * 100).toFixed(0) + "%";
-                                }
-                            }
-                        }]
-                    },
-                    tooltips: {
-                        enabled: false
-                    },
-                    hover: {
-                        mode: null
-                    },
-                },
-                data: {
-                    labels: NAMES,
-                    datasets: [{
-                        label: "Votes",
-                        data: ZEROES.slice(),
-                        backgroundColor: COLORS
-                    }]
-                }
-            });
-            view.vote_charts.push(chart);
         });
 
         div.find("canvas.seats").each(function(ix, canvas) {
@@ -135,21 +101,27 @@ export class View {
                     scales: {
                         xAxes: [{
                             id: "party-axis",
+                            categoryPercentage: 1.0,
+                            barPercentage: 0.9,
                             gridLines: {
                                 display: false,
                                 color: "white",
-                                lineWidth: 0
+                                lineWidth: 0,
                             },
-                            categoryPercentage: 1.0,
-                            barPerentage: 0.9
+                            ticks: {
+                                callback(label, index, labels) {
+                                    let value = view.seats[index];
+                                    return [label, value + ""];
+                                },
+                            },
                         }],
                         yAxes: [{
                             id: "seats-axis",
                             display: false,
                             ticks: {
                                 beginAtZero: true,
-                                max: 400
-                            }
+                                max: 400,
+                            },
                         }]
                     },
                     annotation: {
@@ -167,15 +139,15 @@ export class View {
                                 position: "right",
                                 fontColor: Chart.defaults.global.defaultFontColor,
                                 fontStyle: "normal",
-                                backgroundColor: "white"
-                            }
+                                backgroundColor: "white",
+                            },
                         }],
                     },
                     tooltips: {
-                        enabled: false
+                        enabled: false,
                     },
                     hover: {
-                        mode: null
+                        mode: null,
                     },
                 },
                 data: {
@@ -183,36 +155,9 @@ export class View {
                     datasets: [{
                         label: "Seats",
                         data: ZEROES.slice(),
-                        backgroundColor: COLORS
-                    }]
-                }
-            });
-            view.seat_charts.push(chart);
-        });
-
-        div.find("canvas.pie").each(function(ix, canvas) {
-            let chart = new Chart(canvas, {
-                type: "doughnut",
-                options: {
-                    legend: {
-                        display: false
-                    },
-                    tooltips: {
-                        enabled: false
-                    },
-                    hover: {
-                        mode: null
-                    },
+                        backgroundColor: COLORS,
+                    }],
                 },
-                data: {
-                    labels: NAMES,
-                    datasets: [{
-                        label: "Seats",
-                        borderWidth: 0,
-                        data: ZEROES.slice(),
-                        backgroundColor: COLORS
-                    }]
-                }
             });
             view.seat_charts.push(chart);
         });
@@ -237,24 +182,20 @@ export class View {
         let vote_map = model.normalize_votes(model.get_votes(data));
         let seat_map = model.get_seats(data);
         let used_seat_map = model.remove_unused_seats(seat_map);
-        console.log(seat_map);
-        console.log(used_seat_map);
 
-        let votes = model.count_by_party(vote_map, NAMES);
-        let seats = model.count_by_party(seat_map, NAMES);
-        let used_seats = model.count_by_party(used_seat_map, NAMES);
-        console.log(seats);
-        console.log(used_seats);
+        this.votes = model.count_by_party(vote_map, NAMES);
+        this.seats = model.count_by_party(seat_map, NAMES);
+        this.used_seats = model.count_by_party(used_seat_map, NAMES);
 
         for (let chart of this.vote_charts) {
             for (let i = 0; i < NAMES.length; ++i) {
-                chart.data.datasets[0].data[i] = votes[i];
+                chart.data.datasets[0].data[i] = this.votes[i];
             }
             chart.update();
         }
         for (let chart of this.seat_charts) {
             for (let i = 0; i < NAMES.length; ++i) {
-                let n = used_seats[i];
+                let n = this.used_seats[i];
                 if (n > 0) {
                     // HACK: add 2 seats, to ensure that at least one pixel is drawn
                     // The difference between 0 seats and 1 seat is pretty significant!
@@ -264,7 +205,7 @@ export class View {
                 chart.data.datasets[0].data[i] = n;
             }
             if (chart.options.annotation) {
-                let needed = Math.ceil(utils.sum(used_seats) / 2 + 0.01);
+                let needed = Math.ceil(utils.sum(this.used_seats) / 2 + 0.01);
                 for (let annotation of chart.options.annotation.annotations) {
                     annotation.value = needed + 2; // See HACK above
                     annotation.label.content = needed + " needed for majority";
