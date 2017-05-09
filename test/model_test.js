@@ -187,10 +187,6 @@ assert.deepStrictEqual(model.normalize_votes(POLL), NORMALIZED_POLL);
 
 // Swing is the fractional difference of each party's vote share.
 // Here I have the Conservatives 25 points down, Labour and Lib Dems 12.5% up
-let SWING = { Con: -0.25, Lab: 0.125, Lib: 0.125 };
-
-assert.deepStrictEqual(model.get_swing(VOTES, POLL), SWING);
-
 
 // Applying uniform national swing to the original data.
 // Scotland has 50 votes, so 25% down means losing 12.5 votes, and so on
@@ -202,6 +198,29 @@ let FORECAST_DATA = [
 ];
 
 assert.deepStrictEqual(model.adjust_data_with_poll(DATA, POLL), FORECAST_DATA);
+
+// Updated vote counts should be exactly in line with the poll
+assert.deepStrictEqual(
+    model.normalize_votes(model.get_votes(model.adjust_data_with_poll(DATA, POLL))),
+    NORMALIZED_POLL);
+
+// Some parties are omitted from polls
+
+let PARTIAL_POLL = { Con: 25, Lab: 50, Other: 25 }
+
+assert.deepStrictEqual(model.adjust_data_with_poll(DATA, PARTIAL_POLL), FORECAST_DATA);
+
+// -40 swing for Con, +40 for everyone else (so +20 for each of Labour and Lib Dem)
+PARTIAL_POLL = { Con: 10, Other: 90 }
+
+FORECAST_DATA = [
+    ["Name",                "Con",  "Lab",  "Lib"   ],
+    ["Scotland",            0,      30,     20      ],
+    ["England",             22,     64,     34      ],
+    ["Wales",               -2,     21,     11      ]
+];
+
+assert.deepStrictEqual(model.adjust_data_with_poll(DATA, PARTIAL_POLL), FORECAST_DATA);
 
 // ---------------------------------------------------------------------------------------
 

@@ -155,7 +155,7 @@ export function count_by_party(votes_or_seats, parties) {
         if (parties.indexOf(party) >= 0) {
             count[party] = (count[party] || 0) + votes_or_seats[party];
         } else {
-            count.Other = (count.Other || 0) +  votes_or_seats[party];
+            count.Other = (count.Other || 0) + votes_or_seats[party];
         }
     }
     var result = [];
@@ -223,18 +223,26 @@ export function normalize_votes(votes) {
     return result;
 }
 
+function sum(arr) {
+    let total = 0;
+    for (let a of arr) {
+        total += a;
+    }
+    return total;
+}
+
 /**
  * Calculate the vote swing percentage for each party
- * @param prev - map of party name -> vote count
- * @param next - map of party name -> vote count
- * @return map of party name -> swing (in range 0 to 1)
+ * @param prev - list of vote counts
+ * @param next - list of vote counts
+ * @return list of swings (where .01 means +1%)
  */
-export function get_swing(prev, next) {
-    prev = normalize_votes(prev);
-    next = normalize_votes(next);
-    let swing = {};
-    for (let party in next) {
-        swing[party] = next[party] - prev[party];
+function get_swing(prev, next) {
+    let prev_sum = sum(prev);
+    let next_sum = sum(next);
+    let swing = []
+    for (let i = 0; i < prev.length; i++) {
+        swing.push(next[i] / next_sum - prev[i] / prev_sum);
     }
     return swing;
 }
@@ -247,15 +255,32 @@ export function get_swing(prev, next) {
  * @return a new table of party votes per constituency
  */
 export function adjust_data_with_poll(data, poll) {
-    const votes = get_votes(data);
-    const swing_map = get_swing(votes, poll);
+    let polled_parties = [];
+    for (let p in poll) {
+        polled_parties.push(p);
+    }
+    const old_votes = count_by_party(get_votes(data), polled_parties);
+    const new_votes = count_by_party(poll, polled_parties);
+    const swing_arr = get_swing(old_votes, new_votes);
+    const swing_map = {};
+    for (let i = 0; i < polled_parties.length; i++) {
+        swing_map[polled_parties[i]] = swing_arr[i];
+    }
     const keys = data[0];
-    let swing = [];
+    let num_unpolled = 0;
     for (let i = 1; i < keys.length; i++) {
-        let s = swing_map[keys[i]];
-        if (s === undefined) s = swing_map.Other;
-        if (s === undefined) s = 0;
-        swing[i] = s;
+        let k = keys[i];
+        if (k === "Other" || swing_map[k] === undefined) {
+            ++num_unpolled;
+        }
+    }
+    
+    let swing = [0];
+    for (let i = 1; i < keys.length; i++) {
+        let k = keys[i];
+        let s = swing_map[k];
+        if (k === "Other" || s === undefined) s = swing_map.Other / num_unpolled;
+        swing.push(s);
     }
     var result = [keys];
     for (let i = 1; i < data.length; i++) {
@@ -268,6 +293,11 @@ export function adjust_data_with_poll(data, poll) {
         for (let j = 1; j < row.length; j++) {
             new_row[j] += swing[j] * row_total;
         }
+        console.log("Old and new row data:");
+        console.log(row);
+        console.log(new_row);
+        console.log(sum(row.slice(1)));
+        console.log(sum(new_row.slice(1)));
         result.push(new_row);
     }
     return result;
