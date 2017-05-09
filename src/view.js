@@ -48,9 +48,10 @@ const COLORS = _.map(NAMES, function(name) { return party_color(name); });
 
 export class View {
 
-    constructor(div, json) {
+    constructor(div, json, poll_data) {
         this.div = div;
         this.json = json;
+        this.poll_data = poll_data;
         this.checkbox_map = {};
         this.vote_charts = [];
         this.seat_charts = [];
@@ -59,7 +60,33 @@ export class View {
 
         let view = this;
 
-        div.find("table").each(function(ix, table) {
+        this.reset_poll();
+
+        div.find("table.poll").each(function(ix, table) {
+            for (let name of NAMES) {
+                let color = party_color(name);
+                let tr = $(`<tr class="party" id="${name}">
+                    <td>${name}</td>
+                    <td><form class="form-inline"><div class="form-group"><div class="input-group"><div class="input-group-addon decrement">-</div><input type="text" class="form-control percent" style="text-align: right;"><div class="increment input-group-addon">+</div></div></div></form></td>
+                    <td><div class='hbar' style='background-color: ${color}; width: 0%; height: 1.5em;'></div></td>
+                </tr>`);
+                if (name === "Other") {
+                    // No controls for 'other'
+                    tr.find(".input-group-addon").css("visibility", "hidden");
+                    tr.find(".input-group-addon").attr("disabled", true);
+                }
+                tr.find(".increment").click(function(event) {
+                    console.log("inc!");
+                });
+                tr.find(".decrement").click(function(event) {
+                    console.log("dec!");
+                });
+                tr.css("user-select", "none");
+                tr.appendTo(table);
+            }
+        });
+
+        div.find("table.results").each(function(ix, table) {
             for (let name of NAMES) {
                 let color = party_color(name);
                 let tr = $(`<tr class='party' id='${name}'>
@@ -81,6 +108,7 @@ export class View {
                         }
                     });
                 }
+                tr.css("user-select", "none");
                 tr.appendTo(table);
             }
         });
@@ -89,7 +117,7 @@ export class View {
             view.checkbox_map[checkbox.name] = checkbox;
         });
         div.find("input:checkbox").change(function(element) {
-            view.update(false);
+            view.update();
         });
 
         div.find("canvas.seats").each(function(ix, canvas) {
@@ -163,10 +191,34 @@ export class View {
             view.seat_charts.push(chart);
         });
 
-        this.update(true);
+        this.update();
     }
 
-    update(force) {
+    reset_poll() {
+        if (!this.poll_data) {
+            return;
+        }
+
+        // Fill in gaps in the poll
+        this.poll_map = {}
+        let vote_data = model.normalize_votes(model.get_votes(this.json));
+        let total = 0;
+        console.log(vote_data);
+        for (let name of NAMES) {
+            if (!(name === "Other")) {
+                // Assume vote share is unchanged if it's not listed in the poll
+                let p = this.poll_data[name] || (vote_data[name] * 100);
+                p = Math.round(p * 10); // Use fixed point, 0.1% granularity
+                this.poll_map[name] = p;
+                total += p;
+            }
+        }
+        this.poll_map.Other = 1000 - total;
+    }
+    
+    update() {
+        let view = this;
+
         let bloc = [];
         for (let party in this.checkbox_map) {
             let checkbox = this.checkbox_map[party];
@@ -214,7 +266,13 @@ export class View {
             }
             chart.update();
         }
-        $(this.div).find("tr.party").each(function(ix, tr) {
+        $(this.div).find("table.poll tr.party").each(function(ix, tr) {
+            let party = tr.id;
+            let poll = view.poll_map[party];
+            $(tr).find(".percent").val((poll * 0.1).toFixed(1));
+            $(tr).find(".hbar").animate({width: (poll * 0.2) + "%"}, 400);
+        });
+        $(this.div).find("table.results tr.party").each(function(ix, tr) {
             let party = tr.id;
             let new_vote = vote_map[party];
             let new_text = (100 * new_vote).toFixed(1) + "";

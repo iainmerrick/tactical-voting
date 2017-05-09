@@ -10,12 +10,19 @@ require("bootstrap");
 
 $.getJSON("election_2010.json", function(json) {
     console.log("Loaded 2010 data - " + json.length + " rows");
-    let div = $("#2010ge");
-    new view.View(div, json);
+    new view.View($("#2010ge"), json);
 });
+
+let POLL = {
+    Con: 46.5,
+    Lab: 28.4,
+    LD: 10.0,
+    UKIP: 6.7,
+    Green: 2.9
+};
 
 $.getJSON("election_2015.json", function(json) {
     console.log("Loaded 2015 data - " + json.length + " rows");
-    let div = $("#2015ge");
-    new view.View(div, json);
+    new view.View($("#2015ge"), json);
+    new view.View($("#2017ge"), json, POLL);
 });
