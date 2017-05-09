@@ -252,7 +252,10 @@ export function adjust_data_with_poll(data, poll) {
     const keys = data[0];
     let swing = [];
     for (let i = 1; i < keys.length; i++) {
-        swing[i] = swing_map[keys[i]] || swing_map.Other || 0;
+        let s = swing_map[keys[i]];
+        if (s === undefined) s = swing_map.Other;
+        if (s === undefined) s = 0;
+        swing[i] = s;
     }
     var result = [keys];
     for (let i = 1; i < data.length; i++) {
