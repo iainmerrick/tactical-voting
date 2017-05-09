@@ -135,7 +135,7 @@ export class View {
                             borderDash: [3, 3],
                             value: 330,
                             label: {
-                                content: "330 needed for majority",
+                                content: "330 seats needed for majority",
                                 enabled: true,
                                 position: "right",
                                 fontColor: Chart.defaults.global.defaultFontColor,
@@ -209,7 +209,7 @@ export class View {
                 let needed = Math.ceil(utils.sum(this.used_seats) / 2 + 0.01);
                 for (let annotation of chart.options.annotation.annotations) {
                     annotation.value = needed + 2; // See HACK above
-                    annotation.label.content = needed + " needed for majority";
+                    annotation.label.content = needed + " seats needed for majority";
                 }
             }
             chart.update();
