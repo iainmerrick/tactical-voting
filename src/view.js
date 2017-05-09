@@ -76,14 +76,33 @@ export class View {
                     tr.find(".input-group-addon").attr("disabled", true);
                 }
                 tr.find(".increment").click(function(event) {
-                    console.log("inc!");
+                    let percent = tr.find(".percent");
+                    let current = parseFloat(percent.val());
+                    if (!isNaN(current) && current < 100) {
+                        current = Math.floor(current) + 1;
+                        percent.val(current.toFixed(1));
+                        percent.trigger("change");
+                    }
                 });
                 tr.find(".decrement").click(function(event) {
-                    console.log("dec!");
+                    let percent = tr.find(".percent");
+                    let current = parseFloat(percent.val());
+                    if (!isNaN(current) && current > 0) {
+                        current = Math.ceil(current) - 1;
+                        percent.val(current.toFixed(1));
+                        percent.trigger("change");
+                    }
+                });
+                tr.find(".percent").change(function(event) {
+                    view.update_poll(event);
                 });
                 tr.css("user-select", "none");
                 tr.appendTo(table);
             }
+        });
+
+        div.find("form").submit(function(e){
+            e.preventDefault();
         });
 
         div.find("table.results").each(function(ix, table) {
@@ -140,7 +159,7 @@ export class View {
                             ticks: {
                                 callback(label, index, labels) {
                                     let value = view.seats[index];
-                                    return [label, value + ""];
+                                    return [label, value.toFixed(0)];
                                 },
                             },
                         }],
@@ -203,7 +222,6 @@ export class View {
         this.poll_map = {}
         let vote_data = model.normalize_votes(model.get_votes(this.json));
         let total = 0;
-        console.log(vote_data);
         for (let name of NAMES) {
             if (!(name === "Other")) {
                 // Assume vote share is unchanged if it's not listed in the poll
@@ -216,9 +234,35 @@ export class View {
         this.poll_map.Other = 1000 - total;
     }
     
+    update_poll(event) {
+        let input = $(event.currentTarget);
+        let party = input.closest("tr").attr("id");
+        console.log(input);
+        console.log(party);
+        let new_value = parseFloat(input.val());
+        if (!isNaN(new_value)) {
+            new_value = Math.round(new_value * 10);
+            if (new_value < 0) new_value = 0;
+            if (new_value > 1000) new_value = 1000;
+            let old_value = this.poll_map[party];
+            let delta = new_value - old_value;
+            this.poll_map[party] = new_value;
+            this.poll_map.Other -= delta;
+        }
+        this.update();
+    }
+
     update() {
         let view = this;
 
+        let data = this.json;
+        if (this.poll_map) {
+            data = model.adjust_data_with_poll(data, this.poll_map);
+        }
+
+        let old_vote_map = model.normalize_votes(model.get_votes(data));
+        let old_seat_map = model.get_seats(data);
+        
         let bloc = [];
         for (let party in this.checkbox_map) {
             let checkbox = this.checkbox_map[party];
@@ -226,11 +270,7 @@ export class View {
                 bloc.push(party);
             }
         }
-
-        let old_vote_map = model.normalize_votes(model.get_votes(this.json));
-        let old_seat_map = model.get_seats(this.json);
-        
-        let data = model.adjust_data_with_tactics(this.json, bloc);
+        data = model.adjust_data_with_tactics(data, bloc);
         
         let vote_map = model.normalize_votes(model.get_votes(data));
         let seat_map = model.get_seats(data);
