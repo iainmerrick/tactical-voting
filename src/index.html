@@ -15,21 +15,71 @@ h1, h2, h3, h4, h5, h6 { margin-top: 1.5em; }
     <body>
         <div class="container">
             <h1>Tactical Voting in UK Elections</h1>
-            <p>Tactical voting could have a <b>huge impact</b> on UK elections, and I'm going to show you how.</p>
+            <p>Tactical voting could have a huge impact on UK elections, and I'm going to show you how.</p>
             <ul>
                 <li><a href="#what">What is tactical voting?</a>
                 <li><a href="#2010ge">Case study: 2010 general election</a>
                 <li><a href="#2015ge">Case study: 2015 general election</a>
-                <li><a href="#2017ge">Prospects for the 2017 election</a>
+                <li><a href="#2017ge">2017 election forecasts</a>
             </ul>
             <p>This page was created by <a href="https://twitter.com/iainmerrick">Iain Merrick</a>. Full source code is available on <a href="https://github.com/iainmerrick/tactical-voting">GitHub</a>.
             
             <div id="what">
             <h3>What is tactical voting?</h3>
+            <p>It just means: <b>don't split the vote</b>.
+            <p>Many of the 650 seats in UK elections have results like this:
+                    <table class="table table-striped table-hover table-condensed">
+                    <tr>
+                        <th style="width: 6em;">Party
+                        <th style="width: 3em; text-align: right;">%
+                        <th style="width: 15em;">Vote share
+                        <th>
+                    </tr>
+                    <!-- Colorblind-safe colors from http://mkweb.bcgsc.ca/colorblind/ -->
+                    <tr>
+                        <td>Party A
+                        <td style="text-align:right;">40%
+                        <td><div style="background-color: #e69f00; width: 40%; height: 1.5em;"></div>
+                        <td>
+                    </tr>
+                    <tr>
+                        <td>Party B
+                        <td style="text-align:right;">30%
+                        <td><div style="background-color: #56b4e9; width: 30%; height: 1.5em;"></div>
+                        <td>
+                    </tr>
+                    <tr>
+                        <td>Party C
+                        <td style="text-align:right;">25%
+                        <td><div style="background-color: #009e73; width: 25%; height: 1.5em;"></div>
+                        <td>
+                    </tr>
+                    <tr>
+                        <td>Others
+                        <td style="text-align:right;">5%
+                        <td><div style="background-color: #f0e442; width: 5%; height: 1.5em;"></div>
+                        <td>
+                    </tr>
+                    </table>
             </div>
+            <p>Party A wins the seat outright despite having only 40% of the popular vote.
+            <p>If parties B and C are closely aligned, this is a bad result for both of them: even though they have 55% of the vote between them, they both lose. To win the seat, all of those voters must vote for the same party.
+            <p>This is important: <b>tactical voting is not clever or complicated</b>.
+            <p>All the supporters of B and C must agree which of the two parties they'll get behind. There can't be any secret strategies or special plans. If they argue over which is best placed to defeat their common enemy, they'll split the vote and they'll probably both lose. The decision must be based on hard facts.
+            <p>Here's a good straightforward approach:
+            <ul>
+            <li>Decide which parties you wouldn't mind winning;
+            <li><a href="http://www.bbc.com/news/politics/constituencies">Check how your constituency voted</a> in the last election;
+            <li>Vote for the one that got the most votes.
+            </ul>
+            <p>This isn't very fair, but it's effective.</p>
+
+            <p>Finally: <b>tactical voting can have a huge impact</b>.
+            <p>Everyone knows the UK's "first past the post" (FPTP) system isn't ideal, but I think many people don't realise just how <em>strange</em> the results can be, and how damaging it is to split the vote. Dozens or even hundreds of seats could be in play, as the case studies below will show.
+            <p>Tactical voting usually means switching your vote from a small party to a big one. But <b>both parties can gain seats</b> even if one party loses votes overall. FPTP rewards concentrated local support, and punishes widespread low-level support.
 
             <div id="2010ge">
-                <h3>Case study: 2010 general election</h3>
+                <h3>2010 general election</h3>
                 <p>In 2010, there was a 3-way vote split between the Conservatives, Labour and the Liberal Democrats, resulting in a hung parliament. After almost a week of negotiations, the Conservatives and Liberal Democrats formed a coalition government.
                 <canvas class="seats" width=300 height=100></canvas>
                 <p></p>
@@ -46,7 +96,7 @@ h1, h2, h3, h4, h5, h6 { margin-top: 1.5em; }
             </div>
  
             <div id="2015ge">
-                <h3>Case study: 2015 general election</h3>
+                <h3>2015 general election</h3>
                 <p>In 2015, the Liberal Democrat vote collapsed; the SNP, Greens and especially UKIP saw big increases. The Conservatives won a surprise majority, while the SNP swept Scotland.</p>
                     <canvas class="seats" width=300 height=100></canvas>
                     <p></p>
@@ -62,7 +112,7 @@ h1, h2, h3, h4, h5, h6 { margin-top: 1.5em; }
             </div>
 
             <div id="2017ge">
-                <h3>Prospects for the 2017 election</h3>
+                <h3>2017 election forecasts</h3>
                 <p><em>Coming soon! Forecasts based on council results and/or opinion polls</em></p>
             </div>
         </div>
