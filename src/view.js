@@ -136,7 +136,7 @@ export class View {
             view.checkbox_map[checkbox.name] = checkbox;
         });
         div.find("input:checkbox").change(function(element) {
-            view.update();
+            view.update(false);
         });
 
         div.find("canvas.seats").each(function(ix, canvas) {
@@ -210,7 +210,7 @@ export class View {
             view.seat_charts.push(chart);
         });
 
-        this.update();
+        this.update(false);
     }
 
     reset_poll() {
@@ -243,14 +243,47 @@ export class View {
             if (new_value < 0) new_value = 0;
             if (new_value > 1000) new_value = 1000;
             let old_value = this.poll_map[party];
+            // Adjust 'Other" to compensate
             let delta = new_value - old_value;
             this.poll_map[party] = new_value;
             this.poll_map.Other -= delta;
+            // If necessary, shift all the other parties to keep Other in bounds
+            let slop = 0;
+            if (this.poll_map.Other < 0) {
+                slop = this.poll_map.Other;
+                this.poll_map.Other = 0;
+            }
+            if (this.poll_map.Other > 1000) {
+                slop = this.poll_map.Other - 1000;
+                this.poll_map.Other = 1000;
+            }
+            let movable = _.without(NAMES, party, "Other");
+            for (let loop = 0; slop && movable.length && loop < 10; ++loop) {
+                let fixed = [];
+                for (let i = 0; i < movable.length; ++i) {
+                    let name = movable[i];
+                    delta = Math.round(slop / (movable.length - i));
+                    slop -= delta;
+                    this.poll_map[name] += delta;
+                    if (this.poll_map[name] < 0) {
+                        slop += this.poll_map[name];
+                        this.poll_map[name] = 0;
+                        fixed.push(name)
+                    }
+                    if (this.poll_map[name] > 1000) {
+                        slop += this.poll_map[name] - 1000;
+                        this.poll_map[name] = 1000;
+                        fixed.push(name);
+                    }
+                }
+                movable = _.difference(movable, fixed);
+            }
         }
-        this.update();
+        this.update(true);
     }
 
-    update() {
+    update(fast) {
+        let animTime = fast ? 100 : 400;
         let view = this;
 
         let data = this.json;
@@ -319,7 +352,7 @@ export class View {
             let party = tr.id;
             let poll = view.poll_map[party];
             $(tr).find(".percent").val((poll * 0.1).toFixed(1));
-            $(tr).find(".hbar").animate({width: (poll * 0.2) + "%"}, 400);
+            $(tr).find(".hbar").animate({width: (poll * 0.2) + "%"}, animTime);
         });
         $(this.div).find("table.results tr.party").each(function(ix, tr) {
             let party = tr.id;
@@ -328,13 +361,13 @@ export class View {
             $(tr).find(".vote").each(function(ix, td) {
                 let old_text = $(td).text();
                 if (!(old_text === new_text)) {
-                    $(td).fadeOut(200, function() {
-                        $(td).text(new_text).fadeIn(200);
+                    $(td).fadeOut(animTime / 2, function() {
+                        $(td).text(new_text).fadeIn(animTime / 2);
                     });
                 }
             });
 
-            $(tr).find(".hbar").animate({width: (new_vote * 200) + "%"}, 400);
+            $(tr).find(".hbar").animate({width: (new_vote * 200) + "%"}, animTime);
 
             let old_seats = old_seat_map[party];
             let new_seats = seat_map[party];
