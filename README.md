@@ -43,18 +43,13 @@ The main bar charts use [Chart.js](http://www.chartjs.org), as that looked like 
 
 ## TODO
 
-URGENT, before launch:
-- Finish writeup
+ASAP:
 - Add Open Graph metadata (for people sharing on Twitter & Facebook)
 
-ASAP:
-- Add a forecaster for 2017
-  - Data could come from polls, or maybe the council election results
-  - Extra credit: add a "swingometer" widget to play with the polling data
-  - Don't try to be fancy or super-accurate, just use a simple model
-  - The `adjust_data_with_poll` function in `model.js` should work
-
 Later:
+- Add a FAQ (assuming there are any...)
+- Split tactics function into separate "plan" and "apply" steps
+  - This will make the 2017 forecast a bit more realistic
 - Update the URL and query parameters as you play with the charts
   - So sharing the URL loads the same chart
   - Would be nice to somehow update the Open Graph metadata to match your chart!
