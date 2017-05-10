@@ -82,7 +82,7 @@ table.poll td { padding-top: 0 !important; padding-bottom: 0 !important; }
             <p>If parties B and C are closely aligned, this is a bad result for both of them: even though they have 55% of the vote between them, they both lose. To win the seat, those voters need to vote for a single party.
             <p>This is important: <b>tactical voting is not clever or complicated</b>.
             <p>All the local supporters of B and C must agree which of the two parties they'll get behind. There can't be any secret strategies or special plans. If they argue over which is best placed to defeat their common enemy, they'll split the vote and they'll probably both lose. The decision must be based on hard facts.
-            <p>Here's a good straightforward approach:
+            <p id="approach">Here's a good straightforward approach:
             <ul>
             <li>Decide which parties you wouldn't mind winning;
             <li><a href="http://www.bbc.com/news/politics/constituencies">Check how your constituency voted</a> in the last election;
@@ -109,7 +109,12 @@ table.poll td { padding-top: 0 !important; padding-bottom: 0 !important; }
                 </tr>
                 </table>
                 <p>Due to FPTP, the Conservatives and Labour got the lion's share of the seats. The Greens won a single seat (Brighton Pavilion) due to concentrated local support, but the Liberal Democrats and UKIP were under-represented.</p>
-                <p>To explore the effect tactical voting could have had, select two or more parties in the table above. Supporters of those parties will vote tactically: in each constituency, they'll support the strongest party in the group.</p>
+                <p>To explore the effect tactical voting could have had, select two or more parties in the table above. Supporters of those parties will vote tactically.</p>
+                <div class="panel panel-default">
+                    <div class="panel-heading">How it works</div>
+                    <div class="panel-body"><p>This simulator just takes the raw election data and applies the <a href="#approach">simple bullet points</a> suggested in the previous section. In each constituency, we pick the party in the alliance that has the most votes. All the other party's votes are shifted to that party. It then re-runs the election with the adjusted votes, and shows how many seats changed hands.
+                    <p>Note that this is a very optimistic view, as it's unlikely that every single voter will agree to vote tactically for a single party. My goal here is to show the <em>potential</em> impact of tactical voting — and the very real impact of failing to vote tactically.</div>
+                </div>
             </div>
  
             <hr>
