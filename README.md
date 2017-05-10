@@ -43,13 +43,12 @@ The main bar charts use [Chart.js](http://www.chartjs.org), as that looked like 
 
 ## TODO
 
-ASAP:
-- Add Open Graph metadata (for people sharing on Twitter & Facebook)
-
 Later:
-- Add a FAQ (assuming there are any...)
+- Add a FAQ
+  - Assuming there are any...
 - Split tactics function into separate "plan" and "apply" steps
   - This will make the 2017 forecast a bit more realistic
+  - On second thoughts... I don't think this matters! The number of voters will be the same, the only difference is which party in the tactical alliance they all vote for.
 - Update the URL and query parameters as you play with the charts
   - So sharing the URL loads the same chart
   - Would be nice to somehow update the Open Graph metadata to match your chart!
