@@ -237,8 +237,6 @@ export class View {
     update_poll(event) {
         let input = $(event.currentTarget);
         let party = input.closest("tr").attr("id");
-        console.log(input);
-        console.log(party);
         let new_value = parseFloat(input.val());
         if (!isNaN(new_value)) {
             new_value = Math.round(new_value * 10);
@@ -256,6 +254,8 @@ export class View {
         let view = this;
 
         let data = this.json;
+
+        // Adjust election data for polling, if relevant
         if (this.poll_map) {
             data = model.adjust_data_with_poll(data, this.poll_map);
         }
@@ -263,6 +263,15 @@ export class View {
         let old_vote_map = model.normalize_votes(model.get_votes(data));
         let old_seat_map = model.get_seats(data);
         
+        // Adjust election data for tactical voting, if relevant
+        // Note: strictly speaking tactics should be based on
+        // the raw election data, not poll-adjusted data. But it's
+        // tricky to combine that with the polling swing -- e.g. tactical
+        // voting assumes some LD voters will shift to Labour, but the
+        // poll puts Labour several points down. Does that apply to all
+        // Labour voters, or just "true" Labour voters?
+        // TODO: split tactics into two phases, "decide" and "apply".
+        // Decide based on election data, apply based on polling data.
         let bloc = [];
         for (let party in this.checkbox_map) {
             let checkbox = this.checkbox_map[party];
@@ -314,7 +323,7 @@ export class View {
         });
         $(this.div).find("table.results tr.party").each(function(ix, tr) {
             let party = tr.id;
-            let new_vote = vote_map[party];
+            let new_vote = view.votes[NAMES.indexOf(party)];
             let new_text = (100 * new_vote).toFixed(1) + "";
             $(tr).find(".vote").each(function(ix, td) {
                 let old_text = $(td).text();

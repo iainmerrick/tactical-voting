@@ -293,11 +293,6 @@ export function adjust_data_with_poll(data, poll) {
         for (let j = 1; j < row.length; j++) {
             new_row[j] += swing[j] * row_total;
         }
-        console.log("Old and new row data:");
-        console.log(row);
-        console.log(new_row);
-        console.log(sum(row.slice(1)));
-        console.log(sum(new_row.slice(1)));
         result.push(new_row);
     }
     return result;
