@@ -113,8 +113,14 @@ table.poll td { padding-top: 0 !important; padding-bottom: 0 !important; }
                 <p>To explore the effect tactical voting could have had, select two or more parties in the table above. Supporters of those parties will vote tactically.</p>
                 <div class="panel panel-default">
                     <div class="panel-heading">How it works</div>
-                    <div class="panel-body"><p>This simulator just takes the raw election data and applies the <a href="#approach">simple bullet points</a> suggested in the previous section. In each constituency, we pick the party in the alliance that has the most votes. All the other party's votes are shifted to that party. It then re-runs the election with the adjusted votes, and shows how many seats changed hands.
-                    <p>Note that this is a very optimistic view, as it's unlikely that every single voter will agree to vote tactically for a single party. My goal here is to show the <em>potential</em> impact of tactical voting — and the very real impact of failing to vote tactically.</div>
+                    <div class="panel-body"><p>This simulator just takes the raw election data and applies the <a href="#approach">simple approach</a> suggested in the previous section:
+                    <ul>
+                        <li>In each constituency, pick the party in the alliance with the most votes.
+                        <li>Shift all the other allied party's votes to that party.
+                        <li>Re-run the election and see if the seat changes hands.
+                    </ul>
+                    <p>Note that this is a very optimistic view, as it's unlikely that every single voter will agree to vote tactically for a single party. My goal here is to show the <em>potential</em> impact of tactical voting — and the very real impact of failing to vote tactically.
+                    <p>The "seats needed for majority" line takes into account the Speaker, who traditionally doesn't vote in the House of Commons, and Sinn Féin, who abstain from taking their seats.</div>
                 </div>
             </div>
  
