@@ -31,8 +31,6 @@ The output needs to be checked in. Once it's pushed, GitHub Pages will pick it u
 
 ## How it works
 
-The design is a bit eccentric and messy—I'm more of a C++ programmer, and just wanted to get something up quickly rather than taking the time to learn all the latest JS best practices!
-
 First, note this is a completely static website. I wanted to be able to serve it from GitHub and I wanted people to be able to fork it easily. Some things could be done more smoothly if there were a server-side component, but there isn't.
 
 Raw election data lives in the `data` directory. These files come directly, unedited, from the UK's [Electoral Commission](http://www.electoralcommission.org.uk/our-work/our-research/electoral-data). The `data/election_csv_to_json.js` script tidies up this raw data (for example, collapsing all the minor parties into a single "Other" column) and converts it into a simple JSON format.
@@ -41,14 +39,26 @@ The code and markup for the site are in the `src` directory. The code is roughly
 
 The main bar charts use [Chart.js](http://www.chartjs.org), as that looked like the quickest and easiest option when I was getting started. The horizontal charts are just `div` tags inside a table. Chart.js has decent defaults but is a little inflexible, so now I know what's needed, I think [D3](https://d3js.org) would be a better starting point even though it has a very steep learning curve.
 
+## Possible improvements
+
+The design is a bit eccentric—I'm more of a C++ programmer, and just wanted to get something up quickly rather than taking the time to learn all the latest JS best practices. Constructive criticism welcome!
+
+Now that I've got a working version out the door, I'm tempted to rewrite this more slowly and carefully. My current thoughts on how to do that:
+
+- Move to a more formal Model/View/Controller (Presenter?) design
+- Probably use React (although I hear good things about Elm too)
+- Probably use D3 for the charts
+- Maybe drop Bootstrap, I don't feel it's adding much value here
+
+I'm particularly interested in recommendations on:
+
+- A good simple mobile-friendly UI widget to adjust the polling numbers
+- A build system that provides both fast debugging and a compact static site
+
 ## TODO
 
-Later:
 - Add a FAQ
   - Assuming there are any...
-- Split tactics function into separate "plan" and "apply" steps
-  - This will make the 2017 forecast a bit more realistic
-  - On second thoughts... I don't think this matters! The number of voters will be the same, the only difference is which party in the tactical alliance they all vote for.
 - Update the URL and query parameters as you play with the charts
   - So sharing the URL loads the same chart
   - Would be nice to somehow update the Open Graph metadata to match your chart!
