@@ -48,11 +48,13 @@ const COLORS = _.map(NAMES, function(name) { return party_color(name); });
 
 export class View {
 
-    constructor(div, json, poll_data) {
+    constructor(div, json, options) {
         this.div = div;
         this.json = json;
-        this.poll_data = poll_data;
-        this.checkbox_map = {};
+        this.options = options;
+        this.poll_data = options.poll;
+        this.checkbox1_map = {};
+        this.checkbox2_map = {};
         this.vote_charts = [];
         this.seat_charts = [];
         this.votes = ZEROES;
@@ -108,11 +110,15 @@ export class View {
         div.find("table.results").each(function(ix, table) {
             for (let name of NAMES) {
                 let color = party_color(name);
+                let checkbox = `<label><input type='checkbox' name='${name}' class='checkbox1'></label>&nbsp;&nbsp;`;
+                if (view.options.double_checkbox) {
+                    checkbox += `<label><input type='checkbox' name='${name}' class='checkbox2'></label>&nbsp;&nbsp;`;
+                }
                 let tr = $(`<tr class='party' id='${name}'>
                     <td>${name}
                     <td class='vote' style='text-align: right'>
                     <td><div class='hbar' style='background-color: ${color}; width: 0%; height: 1.5em;'></div>
-                    <td><label><input type='checkbox' name='${name}'></label>&nbsp;&nbsp;<span class='impact'>
+                    <td>${checkbox}<span class='impact'>
                 </tr>`);
                 if (name === "Other") {
                     // No tactical voting checkbox for 'Other'
@@ -122,8 +128,8 @@ export class View {
                         if (event.target.tagName.toLowerCase() === "input") {
                             // Click was on a checkbox, it will already be handled correctly
                         } else {
-                            // Click on another part of the row -- simulate click on checkbox
-                            tr.find("input").trigger("click");
+                            // Click on another part of the row -- simulate click on first checkbox
+                            tr.find("input.checkbox1").trigger("click");
                         }
                     });
                 }
@@ -132,11 +138,25 @@ export class View {
             }
         });
 
-        div.find("input:checkbox").each(function(ix, checkbox) {
-            view.checkbox_map[checkbox.name] = checkbox;
+        div.find(".checkbox1").each(function(ix, checkbox) {
+            view.checkbox1_map[checkbox.name] = checkbox;
+            $(checkbox).change(function(element) {
+                let other = view.checkbox2_map[checkbox.name];
+                if (other && checkbox.checked) {
+                    other.checked = false;
+                }
+                view.update(false);
+            });
         });
-        div.find("input:checkbox").change(function(element) {
-            view.update(false);
+        div.find(".checkbox2").each(function(ix, checkbox) {
+            view.checkbox2_map[checkbox.name] = checkbox;
+            $(checkbox).change(function(element) {
+                let other = view.checkbox1_map[checkbox.name];
+                if (other && checkbox.checked) {
+                    other.checked = false;
+                }
+                view.update(false);
+            });
         });
 
         div.find("canvas.seats").each(function(ix, canvas) {
@@ -305,14 +325,24 @@ export class View {
         // Labour voters, or just "true" Labour voters?
         // TODO: split tactics into two phases, "decide" and "apply".
         // Decide based on election data, apply based on polling data.
-        let bloc = [];
-        for (let party in this.checkbox_map) {
-            let checkbox = this.checkbox_map[party];
+        let bloc1 = [];
+        for (let party in this.checkbox1_map) {
+            let checkbox = this.checkbox1_map[party];
             if (checkbox.checked) {
-                bloc.push(party);
+                bloc1.push(party);
             }
         }
-        data = model.adjust_data_with_tactics(data, bloc);
+
+        let bloc2 = [];
+        for (let party in this.checkbox2_map) {
+            let checkbox = this.checkbox2_map[party];
+            if (checkbox.checked) {
+                bloc2.push(party);
+            }
+        }
+
+        data = model.adjust_data_with_tactics(data, bloc1);
+        data = model.adjust_data_with_tactics(data, bloc2);
         
         let vote_map = model.normalize_votes(model.get_votes(data));
         let seat_map = model.get_seats(data);

@@ -10,7 +10,7 @@ require("bootstrap");
 
 $.getJSON("election_2010.json", function(json) {
     console.log("Loaded 2010 data - " + json.length + " rows");
-    new view.View($("#2010ge"), json);
+    new view.View($("#2010ge"), json, {});
 });
 
 let POLL = {
@@ -23,6 +23,9 @@ let POLL = {
 
 $.getJSON("election_2015.json", function(json) {
     console.log("Loaded 2015 data - " + json.length + " rows");
-    new view.View($("#2015ge"), json);
-    new view.View($("#2017ge"), json, POLL);
+    new view.View($("#2015ge"), json, {});
+    new view.View($("#2017ge"), json, {
+        poll: POLL,
+        double_checkbox: true
+    });
 });
