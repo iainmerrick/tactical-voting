@@ -382,7 +382,8 @@ export class View {
             let party = tr.id;
             let poll = view.poll_map[party];
             $(tr).find(".percent").val((poll * 0.1).toFixed(1));
-            $(tr).find(".hbar").animate({width: (poll * 0.2) + "%"}, animTime);
+            let w = _.min([100, poll * 0.2]) + "%";
+            $(tr).find(".hbar").animate({width: w}, animTime);
         });
         $(this.div).find("table.results tr.party").each(function(ix, tr) {
             let party = tr.id;
@@ -397,7 +398,8 @@ export class View {
                 }
             });
 
-            $(tr).find(".hbar").animate({width: (new_vote * 200) + "%"}, animTime);
+            let w = _.min([100, new_vote * 200]) + "%";
+            $(tr).find(".hbar").animate({width: w}, animTime);
 
             let old_seats = old_seat_map[party];
             let new_seats = seat_map[party];
