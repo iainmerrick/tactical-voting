@@ -4,6 +4,7 @@
 
 require("babel-register");
 
+let _ = require("underscore");
 let assert = require("assert");
 
 let model = require("../src/model");
@@ -157,6 +158,32 @@ let BLOC_SEATS = { Con: 1.5, Lab: 1, Lib: 0.5 };
 
 assert.deepStrictEqual(model.adjust_data_with_tactics(DATA, BLOC), BLOC_DATA);
 assert.deepStrictEqual(model.get_seats(BLOC_DATA), BLOC_SEATS);
+
+// Should be able to use multiple tactical groups (as long as they don't overlap).
+DATA = [
+    ["Name",    "A",    "B",    "C",    "D",    "E" ],
+    ["Aton",    1,      2,      3,      4,      5   ],
+    ["Beton",   2,      3,      4,      5,      1   ],
+    ["Ceton",   3,      4,      5,      1,      2   ],
+    ["Deton",   4,      5,      1,      2,      3   ],
+    ["Eton",    5,      1,      2,      3,      4   ]
+];
+
+let PARTIES = ["A", "B", "C", "D", "E"];
+
+for (let i = 0; i < 20; ++i) {
+    let p = _.shuffle(PARTIES);
+    let bloc1 = [p[0], p[1]];
+    let bloc2 = [p[2], p[3]];
+    
+    let result1 = model.adjust_data_with_tactics(DATA, bloc1);
+    let result2 = model.adjust_data_with_tactics(DATA, bloc2);
+    
+    let result12 = model.adjust_data_with_tactics(result1, bloc2);
+    let result21 = model.adjust_data_with_tactics(result2, bloc1);
+    
+    assert.deepStrictEqual(result12, result21);
+}
 
 // ---------------------------------------------------------------------------------------
 // Swingometer
