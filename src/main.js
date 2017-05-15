@@ -14,11 +14,11 @@ $.getJSON("election_2010.json", function(json) {
 });
 
 let POLL = {
-    Con: 46.7,
-    Lab: 28.8,
-    LD: 9.5,
-    UKIP: 6.5,
-    Green: 3.0
+    Con: 46.8,
+    Lab: 29.8,
+    LD: 9.1,
+    UKIP: 5.8,
+    Green: 2.8
 };
 
 $.getJSON("election_2015.json", function(json) {
